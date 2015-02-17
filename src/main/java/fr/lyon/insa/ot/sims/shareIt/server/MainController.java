@@ -9,6 +9,6 @@ public class MainController {
 	
 	@RequestMapping("/greeting")
     public @ResponseBody String greeting() {
-        return "greeting";
+        return "Hello World";
     }
 }
