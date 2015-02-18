@@ -9,8 +9,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -59,5 +61,31 @@ public class MainController {
 	    this.sharerRepository.save(user);*/
 	}
 	
+	@RequestMapping(method = RequestMethod.POST, value="/user")
+	@ResponseStatus (HttpStatus.CREATED) public @ResponseBody void createUser(
+			@RequestParam(required = true, value="firstname")String firstName,
+			@RequestParam(required = true, value="lastname")String lastName,
+			@RequestParam(required = true, value="postcode")int postCode,
+			@RequestParam("age") int age,
+			@RequestParam("sex") char sex,
+			@RequestParam("phone") String telephone){
+		//TODO : créer utilisateur
+	}
+	@RequestMapping(method = RequestMethod.GET, value="/user/{id:[\\d]+}")
+	public @ResponseBody Sharer getUser(@PathVariable("id")int id){
+		//TODO : renvoyer un utilisateur
+		return null;
+	}
+	@RequestMapping(method = RequestMethod.PUT, value = "/user/{id:[\\d]+}")
+	public @ResponseStatus (HttpStatus.OK) void updateUser(@PathVariable("id") int id,
+			@RequestParam("firstname") String firstName,
+			@RequestParam("lastname") String lastName,
+			@RequestParam("phone") String telephone,
+			@RequestParam("age") int age,
+			@RequestParam("sex") char sex,
+			@RequestParam("postcode") int postCode,
+			HttpEntity<byte[]> picture){
+		//TODO : mettre à jour utilisateur
+	}
 	
 }

@@ -18,7 +18,10 @@ public class Sharer {
 	private String lastname;
 	private String firstname;
 	private int age;
+	private char sex;
 	private float rating;
+	private int postCode;
+	private String telephone;
 	
 	public int getId() {
 		return id;
@@ -61,6 +64,24 @@ public class Sharer {
 	}
 	public void setProFilePictureType(MediaType proFilePictureType) {
 		this.proFilePictureType = proFilePictureType;
+	}
+	public char getSex() {
+		return sex;
+	}
+	public void setSex(char sex) {
+		this.sex = sex;
+	}
+	public int getPostCode() {
+		return postCode;
+	}
+	public void setPostCode(int postCode) {
+		this.postCode = postCode;
+	}
+	public String getTelephone() {
+		return telephone;
+	}
+	public void setTelephone(String telephone) {
+		this.telephone = telephone;
 	}
 	
 	
