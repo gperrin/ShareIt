@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +30,13 @@ public class MainController {
 	
 	@RequestMapping("/greeting")
     public @ResponseBody String greeting() {
-		Sharer user = new Sharer();
+		/*Sharer user = new Sharer();
 		user.setAge(15);
 		user.setFirstname("toto");
 		user.setLastname("michale");
 		user.setRating(2);
 		this.sharerRepository.save(user);
-		System.out.println("/greeting");
+		System.out.println("/greeting");*/
         return "Hello World";
     }
 	@RequestMapping
@@ -67,9 +69,9 @@ public class MainController {
 			@RequestParam(required = true, value="firstname")String firstName,
 			@RequestParam(required = true, value="lastname")String lastName,
 			@RequestParam(required = true, value="postcode")int postCode,
-			@RequestParam("age") Integer age,
-			@RequestParam("sex") Character sex,
-			@RequestParam("phone") String telephone){
+			@RequestParam(required = false, value = "age") Integer age,
+			@RequestParam(required = false , value = "sex") Character sex,
+			@RequestParam(required = false , value = "phone") String telephone){
 		//TODO : créer utilisateur
 		Sharer sharer = this.sharerService.createUser(lastName, firstName, postCode);
 		if ( sharer == null){
@@ -84,7 +86,9 @@ public class MainController {
 		if ( telephone != null ){
 			sharer.setTelephone(telephone);
 		}
-		this.sharerService.updateUser(sharer);
+		if (sex != null || telephone != null || age != null){
+			this.sharerService.updateUser(sharer);
+		}
 		return sharer;
 	}
 	@RequestMapping(method = RequestMethod.GET, value="/user/{id:[\\d]+}")
@@ -94,14 +98,41 @@ public class MainController {
 	}
 	@RequestMapping(method = RequestMethod.PUT, value = "/user/{id:[\\d]+}")
 	public @ResponseStatus (HttpStatus.OK) void updateUser(@PathVariable("id") int id,
-			@RequestParam("firstname") String firstName,
-			@RequestParam("lastname") String lastName,
-			@RequestParam("phone") String telephone,
-			@RequestParam("age") int age,
-			@RequestParam("sex") char sex,
-			@RequestParam("postcode") int postCode,
+			@RequestParam(required= false, value = "firstname") String firstName,
+			@RequestParam(required= false, value = "lastname") String lastName,
+			@RequestParam(required= false, value = "phone") String telephone,
+			@RequestParam(required= false, value = "age") Integer age,
+			@RequestParam(required= false, value = "sex") Character sex,
+			@RequestParam(required= false, value = "postcode") Integer postCode,
 			HttpEntity<byte[]> picture){
-		//TODO : mettre à jour utilisateur
+		Sharer sharer = this.sharerService.getUser(id);
+		if ( sharer != null ){
+			if ( firstName != null ){
+				sharer.setFirstname(firstName);
+			}
+			if ( lastName != null ){
+				sharer.setLastname(lastName);
+			}
+			if ( telephone != null ){
+				sharer.setTelephone(telephone);
+			}
+			if ( age != null ){
+				sharer.setAge(age);
+			}
+			if ( postCode != null ){
+				sharer.setPostCode(postCode);
+			}
+			if ( sex != null ){
+				sharer.setSex(sex);
+			}
+			if ( picture.getBody()!= null){
+				byte[] pic = picture.getBody();
+				MediaType picType = picture.getHeaders().getContentType();
+				sharer.setProfilePicture(pic);
+				sharer.setProFilePictureType(picType);
+			}
+			this.sharerService.updateUser(sharer);
+		}
 	}
 	
 }
