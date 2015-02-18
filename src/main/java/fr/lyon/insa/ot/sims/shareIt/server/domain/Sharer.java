@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.springframework.http.MediaType;
+
 
 @Entity
 public class Sharer {
@@ -11,6 +13,13 @@ public class Sharer {
 	@GeneratedValue
 	private int id;
 
+	private byte[] profilePicture;
+	private MediaType proFilePictureType;
+	private String lastname;
+	private String firstname;
+	private int age;
+	private float rating;
+	
 	public int getId() {
 		return id;
 	}
@@ -41,9 +50,19 @@ public class Sharer {
 	public void setRating(float rating) {
 		this.rating = rating;
 	}
-	private String lastname;
-	private String firstname;
-	private int age;
-	private float rating;
+	public byte[] getProfilePicture() {
+		return profilePicture;
+	}
+	public void setProfilePicture(byte[] profilePicture) {
+		this.profilePicture = profilePicture;
+	}
+	public MediaType getProFilePictureType() {
+		return proFilePictureType;
+	}
+	public void setProFilePictureType(MediaType proFilePictureType) {
+		this.proFilePictureType = proFilePictureType;
+	}
+	
+	
 
 }
