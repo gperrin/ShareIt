@@ -1,5 +1,7 @@
 package fr.lyon.insa.ot.sims.shareIt.server.domain;
 
+import java.util.Arrays;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -82,6 +84,71 @@ public class Sharer {
 	}
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
+	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + age;
+		result = prime * result
+				+ ((firstname == null) ? 0 : firstname.hashCode());
+		result = prime * result + id;
+		result = prime * result
+				+ ((lastname == null) ? 0 : lastname.hashCode());
+		result = prime * result + postCode;
+		result = prime
+				* result
+				+ ((proFilePictureType == null) ? 0 : proFilePictureType
+						.hashCode());
+		result = prime * result + Arrays.hashCode(profilePicture);
+		result = prime * result + Float.floatToIntBits(rating);
+		result = prime * result + sex;
+		result = prime * result
+				+ ((telephone == null) ? 0 : telephone.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Sharer))
+			return false;
+		Sharer other = (Sharer) obj;
+		if (age != other.age)
+			return false;
+		if (firstname == null) {
+			if (other.firstname != null)
+				return false;
+		} else if (!firstname.equals(other.firstname))
+			return false;
+		if (id != other.id)
+			return false;
+		if (lastname == null) {
+			if (other.lastname != null)
+				return false;
+		} else if (!lastname.equals(other.lastname))
+			return false;
+		if (postCode != other.postCode)
+			return false;
+		if (proFilePictureType == null) {
+			if (other.proFilePictureType != null)
+				return false;
+		} else if (!proFilePictureType.equals(other.proFilePictureType))
+			return false;
+		if (!Arrays.equals(profilePicture, other.profilePicture))
+			return false;
+		if (Float.floatToIntBits(rating) != Float.floatToIntBits(other.rating))
+			return false;
+		if (sex != other.sex)
+			return false;
+		if (telephone == null) {
+			if (other.telephone != null)
+				return false;
+		} else if (!telephone.equals(other.telephone))
+			return false;
+		return true;
 	}
 	
 	

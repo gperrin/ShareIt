@@ -1,12 +1,9 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,12 +15,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.services.ISharerService;
 
 @Controller
 public class MainController {
 	
 	@Autowired
 	SharerRepository sharerRepository;
+	
+	@Autowired
+	ISharerService sharerService;
 	
 	@RequestMapping("/greeting")
     public @ResponseBody String greeting() {
@@ -62,19 +63,34 @@ public class MainController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value="/user")
-	@ResponseStatus (HttpStatus.CREATED) public @ResponseBody void createUser(
+	@ResponseStatus (HttpStatus.CREATED) public @ResponseBody Sharer createUser(
 			@RequestParam(required = true, value="firstname")String firstName,
 			@RequestParam(required = true, value="lastname")String lastName,
 			@RequestParam(required = true, value="postcode")int postCode,
-			@RequestParam("age") int age,
-			@RequestParam("sex") char sex,
+			@RequestParam("age") Integer age,
+			@RequestParam("sex") Character sex,
 			@RequestParam("phone") String telephone){
 		//TODO : créer utilisateur
+		Sharer sharer = this.sharerService.createUser(lastName, firstName, postCode);
+		if ( sharer == null){
+			return null;//TODO : err msg
+		}
+		if ( age != null ){
+			sharer.setAge(age);
+		}
+		if ( sex != null ){
+			sharer.setSex(sex);
+		}
+		if ( telephone != null ){
+			sharer.setTelephone(telephone);
+		}
+		this.sharerService.updateUser(sharer);
+		return sharer;
 	}
 	@RequestMapping(method = RequestMethod.GET, value="/user/{id:[\\d]+}")
 	public @ResponseBody Sharer getUser(@PathVariable("id")int id){
-		//TODO : renvoyer un utilisateur
-		return null;
+		Sharer sharer = this.sharerService.getUser(id);
+		return sharer; //TODO : rediriger sur erreur si nul
 	}
 	@RequestMapping(method = RequestMethod.PUT, value = "/user/{id:[\\d]+}")
 	public @ResponseStatus (HttpStatus.OK) void updateUser(@PathVariable("id") int id,
