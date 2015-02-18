@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -16,8 +15,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.services.IProductService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.ISharerService;
+
+
 
 @Controller
 public class MainController {
@@ -28,7 +32,11 @@ public class MainController {
 	@Autowired
 	ISharerService sharerService;
 	
+	@Autowired
+	IProductService productService;
+	
 	@RequestMapping("/greeting")
+
     public @ResponseBody String greeting() {
 		/*Sharer user = new Sharer();
 		user.setAge(15);
@@ -133,6 +141,36 @@ public class MainController {
 			}
 			this.sharerService.updateUser(sharer);
 		}
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value="/user/{id:[\\d]+}/product")
+	public @ResponseBody Product createProduct (@PathVariable("id") int userId,
+			@RequestParam(required = true, value = "name") String name,
+			@RequestParam(required = false, value = "description") String description,
+			@RequestParam(required = true, value = "category") String category
+			){
+		Product product;
+		Sharer user = this.sharerService.getUser(userId);
+		if ( user == null ){
+			return null; //TODO : err msg
+		}
+		ProductCategory matchingCategory = null;
+		for ( ProductCategory cat : ProductCategory.values()){
+			if( cat.name().equals(category)){
+				matchingCategory = cat;
+				break;
+			}
+		}
+		if ( matchingCategory == null ){
+			return null; //TODO : message d'erreur
+		}
+		if ( description == null ){
+			product = this.productService.createProduct(name, matchingCategory, user);
+		}
+		else{
+			product = this.productService.createProduct(name, matchingCategory, user, description);
+		}
+		return product;
 	}
 	
 }
