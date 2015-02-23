@@ -82,14 +82,38 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public Collection<Product> getProducts(int postcode) {
-		Collection<Sharer> usersInTown = this.sharerService.getSharers(postcode);
+	public Collection<Product> findProducts(int postcode) {
+		Collection<Sharer> usersInTown = new ArrayList<>();
+		usersInTown.addAll( this.sharerService.getSharers(postcode));
 		Collection<Product> products = new ArrayList<>();
 		for(Sharer s: usersInTown){
 			products.addAll(this.productRepository.findBySharer(s));
 		}
-		
 		return products;
+	}
+
+	@Override
+	public Collection<Product> findProducts(ProductCategory category) {
+		Collection<Product> products = new ArrayList<>();
+		products.addAll(this.productRepository.findByCategory(category));
+		return products;
+	}
+
+	@Override
+	public Collection<Product> findProducts( int postcode, ProductCategory category) {
+		Collection<Product> products = new ArrayList<>();
+		products.addAll(this.productRepository.findByCategory(category));
+		Collection<Product> filteredResults = new ArrayList<>();
+		for ( Product product : products ){
+			if ( product.getSharer().getPostCode() == postcode){
+				filteredResults.add(product);
+			}
+		}
+		return filteredResults;
+	}
+	@Override
+	public Collection<Product> findProducts(){
+		return (Collection<Product>) this.productRepository.findAll();
 	}
 
 }

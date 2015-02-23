@@ -52,6 +52,7 @@ public class MainController {
 		
 		return result;
 	}
+	
 	@RequestMapping(value = "/picture" , method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.NO_CONTENT) void postPicture (HttpEntity<byte[]> requestEntity){
 		/*byte[] payload = requestEntity.getBody();
@@ -180,17 +181,41 @@ public class MainController {
 	@RequestMapping(method = RequestMethod.GET, value="/product/{id}")
 	public @ResponseBody Product getProduct(@PathVariable("id")int id){
 		Product product = this.productService.getProduct(id);
+		
 		return product; //TODO : rediriger sur erreur si nul
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value="/removeProduct/{id}")
+	@RequestMapping(method = RequestMethod.DELETE, value="/product/{id}")
 	public @ResponseStatus(HttpStatus.OK) void removeProduct(@PathVariable("id")int objectId){
 		this.productService.removeProduct(objectId);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value="/products/{postcode}")
-	public @ResponseBody Collection<Product> getProducts(@PathVariable("postcode")int postcode){
-		return this.productService.getProducts(postcode);
+	@RequestMapping(method = RequestMethod.GET, value="/product")
+	public @ResponseBody Collection<Product> getProducts(
+			@RequestParam(required= false, value="postcode")Integer postcode,
+			@RequestParam(required=false, value ="category") Integer categoryId){
+		ProductCategory category = null;
+		if ( categoryId != null ){
+			category = this.productCategoryService.getById(categoryId);
+		}
+		if ( category == null ){
+			if ( postcode == null ){ //recherche de tous les produits
+				return this.productService.findProducts();
+			}
+			else{ // recherche par code postal
+				return this.productService.findProducts(postcode);
+			}
+		}
+		else{
+			if ( postcode == null ){ //recherche par categorie
+				return this.productService.findProducts(category);
+			}
+			else{ // recherche par code postal et categorie
+				return this.productService.findProducts( postcode, category );
+			}
+		}
 	}
+	
+	
 	
 }

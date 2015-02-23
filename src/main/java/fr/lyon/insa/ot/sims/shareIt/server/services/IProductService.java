@@ -12,5 +12,10 @@ public interface IProductService {
 	public Product createProduct ( String name, ProductCategory category, Sharer sharer, String description);
 	public Product getProduct(int id);
 	public void removeProduct(int objectId);
-	public Collection<Product> getProducts(int postcode);
+	public Collection<Product> findProducts();
+	public Collection<Product> findProducts(int postcode );
+	public Collection<Product> findProducts(ProductCategory category);
+	public Collection<Product> findProducts(int postcode, ProductCategory category);
+	
+
 }
