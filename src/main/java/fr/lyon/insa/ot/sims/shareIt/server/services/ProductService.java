@@ -20,6 +20,9 @@ public class ProductService implements IProductService {
 	@Autowired
 	ProductRepository productRepository;
 	
+	@Autowired
+	ISharerService sharerService;
+	
 	@Override
 	public Product createProduct(String name, ProductCategory category,
 			Sharer sharer) {
@@ -80,6 +83,17 @@ public class ProductService implements IProductService {
 	@Override
 	public void removeProduct(int objectId) {
 		this.productRepository.delete(objectId);
+	}
+
+	@Override
+	public Collection<Product> getProducts(int postcode) {
+		Collection<Sharer> usersInTown = this.sharerService.getSharers(postcode);
+		Collection<Product> products = new ArrayList<>();
+		for(Sharer s: usersInTown){
+			products.addAll(this.productRepository.findBySharer(s));
+		}
+		
+		return products;
 	}
 
 }

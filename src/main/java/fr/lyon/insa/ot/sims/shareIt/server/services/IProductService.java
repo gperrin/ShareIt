@@ -13,4 +13,5 @@ public interface IProductService {
 	public Collection<ProductCategory> getProductCategories ( );
 	public Product getProduct(int id);
 	public void removeProduct(int objectId);
+	public Collection<Product> getProducts(int postcode);
 }

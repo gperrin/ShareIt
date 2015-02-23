@@ -178,9 +178,14 @@ public class MainController {
 		return product; //TODO : rediriger sur erreur si nul
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value="removeProduct/{id}")
-	public @ResponseStatus(HttpStatus.OK) void removeProduct(int objectId){
+	@RequestMapping(method = RequestMethod.GET, value="/removeProduct/{id}")
+	public @ResponseStatus(HttpStatus.OK) void removeProduct(@PathVariable("id")int objectId){
 		this.productService.removeProduct(objectId);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/products/{postcode}")
+	public @ResponseBody Collection<Product> getProducts(@PathVariable("postcode")int postcode){
+		return this.productService.getProducts(postcode);
 	}
 	
 }

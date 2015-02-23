@@ -1,5 +1,7 @@
 package fr.lyon.insa.ot.sims.shareIt.server.services;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,6 +65,11 @@ public class SharerService implements ISharerService{
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public Collection<Sharer> getSharers(int postcode) {
+		return this.sharerRepository.findByPostCode(postcode);
 	}
 
 	
