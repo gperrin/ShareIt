@@ -1,5 +1,10 @@
 package fr.lyon.insa.ot.sims.shareIt.server.services;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +56,12 @@ public class ProductService implements IProductService {
 			return null;
 		}
 		return product;
+	}
+
+	@Override
+	public Collection<ProductCategory> getProductCategories() {
+		List<ProductCategory> categoryList = new ArrayList<>(Arrays.asList(ProductCategory.values()));
+		return categoryList;
 	}
 
 }

@@ -1,5 +1,6 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class MainController {
 	@Autowired
 	IProductService productService;
 	
+	
 	@RequestMapping("/greeting")
-
     public @ResponseBody String greeting() {
 		/*Sharer user = new Sharer();
 		user.setAge(15);
@@ -171,6 +172,11 @@ public class MainController {
 			product = this.productService.createProduct(name, matchingCategory, user, description);
 		}
 		return product;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/product/category")
+	public @ResponseBody Collection<ProductCategory> getProductCategories(){
+		return this.productService.getProductCategories();
 	}
 	
 }
