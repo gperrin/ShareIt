@@ -39,13 +39,6 @@ public class MainController {
 	
 	@RequestMapping("/greeting")
     public @ResponseBody String greeting() {
-		/*Sharer user = new Sharer();
-		user.setAge(15);
-		user.setFirstname("toto");
-		user.setLastname("michale");
-		user.setRating(2);
-		this.sharerRepository.save(user);
-		System.out.println("/greeting");*/
         return "Hello World";
     }
 	@RequestMapping
@@ -177,6 +170,12 @@ public class MainController {
 	@RequestMapping(method = RequestMethod.GET, value="/product/category")
 	public @ResponseBody Collection<ProductCategory> getProductCategories(){
 		return this.productService.getProductCategories();
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/product/{id}")
+	public @ResponseBody Product getProduct(@PathVariable("id")int id){
+		Product product = this.productService.getProduct(id);
+		return product; //TODO : rediriger sur erreur si nul
 	}
 	
 }

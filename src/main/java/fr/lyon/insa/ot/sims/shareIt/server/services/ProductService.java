@@ -64,4 +64,17 @@ public class ProductService implements IProductService {
 		return categoryList;
 	}
 
+	@Override
+	public Product getProduct(int id) {
+		Product product = null;
+		try{
+			product = this.productRepository.findOne(id);
+		}
+		catch ( Exception e ){
+			e.printStackTrace();
+			return null;
+		}
+		return product;
+	}
+
 }

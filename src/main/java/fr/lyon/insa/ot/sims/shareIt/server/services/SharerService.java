@@ -1,7 +1,6 @@
 package fr.lyon.insa.ot.sims.shareIt.server.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
