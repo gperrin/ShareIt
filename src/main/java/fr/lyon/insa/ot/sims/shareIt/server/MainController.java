@@ -42,13 +42,6 @@ public class MainController {
 	
 	@RequestMapping("/greeting")
     public @ResponseBody String greeting() {
-		/*Sharer user = new Sharer();
-		user.setAge(15);
-		user.setFirstname("toto");
-		user.setLastname("michale");
-		user.setRating(2);
-		this.sharerRepository.save(user);
-		System.out.println("/greeting");*/
         return "Hello World";
     }
 	@RequestMapping
@@ -177,10 +170,27 @@ public class MainController {
 		return this.productCategoryService.getCategories();
 	}
 	
+
 	/*@RequestMapping(method = RequestMethod.GET, value="/product")
 	public @ResponseBody Collection<Product> getProductByCategory (
 			@RequestParam(required = true, value = "category") String category){
 		
 	}*/
+
+	@RequestMapping(method = RequestMethod.GET, value="/product/{id}")
+	public @ResponseBody Product getProduct(@PathVariable("id")int id){
+		Product product = this.productService.getProduct(id);
+		return product; //TODO : rediriger sur erreur si nul
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/removeProduct/{id}")
+	public @ResponseStatus(HttpStatus.OK) void removeProduct(@PathVariable("id")int objectId){
+		this.productService.removeProduct(objectId);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/products/{postcode}")
+	public @ResponseBody Collection<Product> getProducts(@PathVariable("postcode")int postcode){
+		return this.productService.getProducts(postcode);
+	}
 	
 }
