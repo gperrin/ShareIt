@@ -19,6 +19,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.services.IProductCategoryService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IProductService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.ISharerService;
 
@@ -36,6 +37,8 @@ public class MainController {
 	@Autowired
 	IProductService productService;
 	
+	@Autowired
+	IProductCategoryService productCategoryService;
 	
 	@RequestMapping("/greeting")
     public @ResponseBody String greeting() {
@@ -148,7 +151,7 @@ public class MainController {
 	public @ResponseBody Product createProduct (@PathVariable("id") int userId,
 			@RequestParam(required = true, value = "name") String name,
 			@RequestParam(required = false, value = "description") String description,
-			@RequestParam(required = true, value = "category") String category
+			@RequestParam(required = true, value = "category") int category
 			){
 		Product product;
 		Sharer user = this.sharerService.getUser(userId);
@@ -156,12 +159,7 @@ public class MainController {
 			return null; //TODO : err msg
 		}
 		ProductCategory matchingCategory = null;
-		for ( ProductCategory cat : ProductCategory.values()){
-			if( cat.name().equals(category)){
-				matchingCategory = cat;
-				break;
-			}
-		}
+		matchingCategory = this.productCategoryService.getById(category);
 		if ( matchingCategory == null ){
 			return null; //TODO : message d'erreur
 		}
@@ -176,7 +174,13 @@ public class MainController {
 	
 	@RequestMapping(method = RequestMethod.GET, value="/product/category")
 	public @ResponseBody Collection<ProductCategory> getProductCategories(){
-		return this.productService.getProductCategories();
+		return this.productCategoryService.getCategories();
 	}
+	
+	/*@RequestMapping(method = RequestMethod.GET, value="/product")
+	public @ResponseBody Collection<Product> getProductByCategory (
+			@RequestParam(required = true, value = "category") String category){
+		
+	}*/
 	
 }

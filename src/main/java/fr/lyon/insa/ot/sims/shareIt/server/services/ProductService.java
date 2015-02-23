@@ -28,7 +28,7 @@ public class ProductService implements IProductService {
 		product.setDescription("");
 		product.setNom(name);
 		product.setSharer(sharer);
-		product.setStatus(ProductStatus.available);
+		//product.setStatus(ProductStatus.available);
 		try{
 			this.productRepository.save(product);
 		}
@@ -44,10 +44,10 @@ public class ProductService implements IProductService {
 			Sharer sharer, String description) {
 		Product product = new Product();
 		product.setCategory(category);
-		product.setDescription("");
+		product.setDescription(description);
 		product.setNom(name);
 		product.setSharer(sharer);
-		product.setStatus(ProductStatus.available);
+		product.setStatus(ProductStatus.disponible);
 		try{
 			this.productRepository.save(product);
 		}
@@ -58,10 +58,6 @@ public class ProductService implements IProductService {
 		return product;
 	}
 
-	@Override
-	public Collection<ProductCategory> getProductCategories() {
-		List<ProductCategory> categoryList = new ArrayList<>(Arrays.asList(ProductCategory.values()));
-		return categoryList;
-	}
+	
 
 }

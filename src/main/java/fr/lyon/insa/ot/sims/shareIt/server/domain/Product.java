@@ -15,6 +15,7 @@ public class Product {
 	@ManyToOne
 	Sharer sharer;
 	ProductStatus status;
+	@ManyToOne
 	ProductCategory category;
 	
 	public Product(){
