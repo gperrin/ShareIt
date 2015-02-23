@@ -77,4 +77,9 @@ public class ProductService implements IProductService {
 		return product;
 	}
 
+	@Override
+	public void removeProduct(int objectId) {
+		this.productRepository.delete(objectId);
+	}
+
 }
