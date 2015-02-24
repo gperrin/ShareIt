@@ -29,9 +29,9 @@ public class ProductService implements IProductService {
 		Product product = new Product();
 		product.setCategory(category);
 		product.setDescription("");
-		product.setNom(name);
+		product.setName(name);
 		product.setSharer(sharer);
-		//product.setStatus(ProductStatus.available);
+		product.setStatus(ProductStatus.disponible);
 		try{
 			this.productRepository.save(product);
 		}
@@ -48,7 +48,7 @@ public class ProductService implements IProductService {
 		Product product = new Product();
 		product.setCategory(category);
 		product.setDescription(description);
-		product.setNom(name);
+		product.setName(name);
 		product.setSharer(sharer);
 		product.setStatus(ProductStatus.disponible);
 		try{
@@ -78,7 +78,11 @@ public class ProductService implements IProductService {
 
 	@Override
 	public void removeProduct(int objectId) {
-		this.productRepository.delete(objectId);
+		Product product = this.productRepository.findOne(objectId);
+		if ( product != null ){
+			product.setStatus(ProductStatus.retire);
+			this.productRepository.save(product);
+		}
 	}
 
 	@Override

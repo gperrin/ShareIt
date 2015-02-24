@@ -1,5 +1,6 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.Exchange;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.services.IExchangeService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IProductCategoryService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IProductService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.ISharerService;
@@ -39,6 +42,9 @@ public class MainController {
 	
 	@Autowired
 	IProductCategoryService productCategoryService;
+	
+	@Autowired
+	IExchangeService exchangeService;
 	
 	@RequestMapping("/greeting")
     public @ResponseBody String greeting() {
@@ -216,6 +222,86 @@ public class MainController {
 		}
 	}
 	
+	@RequestMapping(method = RequestMethod.POST, value = "/product/{id:[\\d]+}/borrow")
+	public @ResponseBody Exchange askProduct(@PathVariable("id") int productId,
+			@RequestParam("borrower") int borrowerId,
+			@RequestParam("lender") int lenderId){
+		Sharer borrower = this.sharerService.getUser(borrowerId);
+		Sharer lender = this.sharerService.getUser(lenderId);
+		Product product = this.productService.getProduct(productId);
+		if (borrower != null && lender != null && product != null){
+			Exchange exchange = this.exchangeService.createExhange(borrower, lender, product);
+			if ( exchange != null ){
+				return exchange;
+			}
+			else{
+				return null; // msg d'erreur ici
+			}
+		}
+		else{
+			return null; //TODO : msg erreur
+		}
+	}
 	
+	@RequestMapping(method = RequestMethod.GET, value = "/user/{id:[\\d]+}/borrowed")
+	@ResponseBody Collection<Exchange> getBorrowedProducts(@PathVariable("id") int userId){
+		Sharer borrower = this.sharerService.getUser(userId);
+		if (borrower != null ){
+			Collection<Exchange> exchanges = this.exchangeService.findByBorrower(borrower);
+			if (exchanges != null ){
+				return exchanges;
+			}
+		}
+			return new ArrayList<Exchange> ();
+	}
 	
+	@RequestMapping(method = RequestMethod.GET, value = "/user/{id:[\\d]+}/lended")
+	@ResponseBody Collection<Exchange> getLendedProducts(@PathVariable("id") int userId){
+		Sharer lender = this.sharerService.getUser(userId);
+		if (lender!= null ){
+			Collection<Exchange> exchanges = this.exchangeService.findByLender(lender);
+			if (exchanges != null ){
+				return exchanges;
+			}
+		}
+			return new ArrayList<Exchange> ();
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value="/exchange/{id:[\\d]+}/accept")
+	@ResponseBody Exchange acceptExchange(@PathVariable("id") int exchangeId){
+		Exchange exchange = this.exchangeService.getById(exchangeId);
+		if ( exchange != null ){
+			exchange = this.exchangeService.acceptExchange(exchange);
+			return exchange;
+		}
+		else{
+			//TODO :err msg
+			return null;
+		}
+	}
+	@RequestMapping(method = RequestMethod.PUT, value="/exchange/{id:[\\d]+}/reject")
+	@ResponseBody Exchange rejectExchange(@PathVariable("id") int exchangeId){
+		Exchange exchange = this.exchangeService.getById(exchangeId);
+		if ( exchange != null ){
+			exchange = this.exchangeService.rejectExchange(exchange);
+			return exchange;
+		}
+		else{
+			//TODO :err msg
+			return null;
+		}
+	}
+	@RequestMapping(method=RequestMethod.PUT, value="/exchange/{id:[\\d]+}/complete")
+	@ResponseBody Exchange completeExchange(@PathVariable("id") int exchangeId,
+			@RequestParam("returned") boolean objectReturned){
+		Exchange exchange = this.exchangeService.getById(exchangeId);
+		if ( exchange != null ){
+			exchange = this.exchangeService.setCompleted(exchange, objectReturned);
+			return exchange;
+		}
+		else{
+			//TODO : err msg
+			return null;
+		}
+	}
 }

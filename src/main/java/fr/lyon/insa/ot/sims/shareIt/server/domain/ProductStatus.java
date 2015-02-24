@@ -1,5 +1,5 @@
 package fr.lyon.insa.ot.sims.shareIt.server.domain;
 
 public enum ProductStatus {
-	disponible, emprunte, rendu, reserve
+	disponible, emprunte, rendu, reserve, perdu, retire
 }

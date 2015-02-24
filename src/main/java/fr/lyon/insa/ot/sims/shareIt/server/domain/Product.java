@@ -10,7 +10,7 @@ public class Product {
 	@Id
 	@GeneratedValue
 	private int id;
-	String nom;
+	String name;
 	String description;
 	@ManyToOne
 	Sharer sharer;
@@ -22,12 +22,12 @@ public class Product {
 		
 	}
 
-	public String getNom() {
-		return nom;
+	public String getName() {
+		return name;
 	}
 
-	public void setNom(String nom) {
-		this.nom = nom;
+	public void setName(String nom) {
+		this.name = nom;
 	}
 
 	public String getDescription() {
@@ -75,7 +75,7 @@ public class Product {
 		result = prime * result
 				+ ((description == null) ? 0 : description.hashCode());
 		result = prime * result + id;
-		result = prime * result + ((nom == null) ? 0 : nom.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((sharer == null) ? 0 : sharer.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
@@ -99,10 +99,10 @@ public class Product {
 			return false;
 		if (id != other.id)
 			return false;
-		if (nom == null) {
-			if (other.nom != null)
+		if (name == null) {
+			if (other.name != null)
 				return false;
-		} else if (!nom.equals(other.nom))
+		} else if (!name.equals(other.name))
 			return false;
 		if (sharer == null) {
 			if (other.sharer != null)
