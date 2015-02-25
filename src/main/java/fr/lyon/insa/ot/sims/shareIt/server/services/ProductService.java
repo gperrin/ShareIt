@@ -1,9 +1,7 @@
 package fr.lyon.insa.ot.sims.shareIt.server.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +11,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductStatus;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 
 @Service
 public class ProductService implements IProductService {
@@ -82,6 +81,9 @@ public class ProductService implements IProductService {
 		if ( product != null ){
 			product.setStatus(ProductStatus.retire);
 			this.productRepository.save(product);
+		}
+		else{
+			throw new ResourceNotFoundException("Product", objectId);
 		}
 	}
 

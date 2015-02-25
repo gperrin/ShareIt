@@ -3,12 +3,14 @@ package fr.lyon.insa.ot.sims.shareIt.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,6 +23,8 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Exchange;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.exceptions.BusinessLogicException;
+import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IExchangeService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IProductCategoryService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IProductService;
@@ -59,6 +63,28 @@ public class MainController {
 		return result;
 	}
 	
+	@ExceptionHandler ( ResourceNotFoundException.class )
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public @ResponseBody Map<String, String> handleResourceNotFound(ResourceNotFoundException exception){
+		Map<String,String> response = new HashMap<>();
+		response.put("cause : ", exception.getMessage());
+		return response;
+	}
+	@ExceptionHandler ( BusinessLogicException.class )
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public @ResponseBody Map<String, String> handleBusinessLogicException(BusinessLogicException exception){
+		Map<String,String> response = new HashMap<>();
+		response.put("cause : ", exception.getMessage());
+		return response;
+	}
+	@ExceptionHandler ( RuntimeException.class )
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	public @ResponseBody Map<String, String> handleRuntimeException(RuntimeException exception){
+		Map<String,String> response = new HashMap<>();
+		response.put("cause : ", exception.getMessage());
+		return response;
+	}
+	
 	@RequestMapping(value = "/picture" , method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.NO_CONTENT) void postPicture (HttpEntity<byte[]> requestEntity){
 		/*byte[] payload = requestEntity.getBody();
@@ -84,15 +110,17 @@ public class MainController {
 			@RequestParam(required = false, value = "age") Integer age,
 			@RequestParam(required = false , value = "sex") Character sex,
 			@RequestParam(required = false , value = "phone") String telephone){
-		//TODO : créer utilisateur
 		Sharer sharer = this.sharerService.createUser(lastName, firstName, postCode);
 		if ( sharer == null){
-			return null;//TODO : err msg
+			throw new RuntimeException("User could not be created.");
 		}
 		if ( age != null ){
 			sharer.setAge(age);
 		}
 		if ( sex != null ){
+			if ( sex != 'M' && sex != 'F'){
+				throw new BusinessLogicException("Sex parameter can either be 'M' or 'F'");
+			}
 			sharer.setSex(sex);
 		}
 		if ( telephone != null ){
@@ -106,10 +134,11 @@ public class MainController {
 	@RequestMapping(method = RequestMethod.GET, value="/user/{id:[\\d]+}")
 	public @ResponseBody Sharer getUser(@PathVariable("id")int id){
 		Sharer sharer = this.sharerService.getUser(id);
-		return sharer; //TODO : rediriger sur erreur si nul
+		if ( sharer == null ) throw new ResourceNotFoundException("user", id);
+		return sharer; 
 	}
 	@RequestMapping(method = RequestMethod.PUT, value = "/user/{id:[\\d]+}")
-	public @ResponseStatus (HttpStatus.OK) void updateUser(@PathVariable("id") int id,
+	public @ResponseStatus (HttpStatus.OK) Sharer updateUser(@PathVariable("id") int id,
 			@RequestParam(required= false, value = "firstname") String firstName,
 			@RequestParam(required= false, value = "lastname") String lastName,
 			@RequestParam(required= false, value = "phone") String telephone,
@@ -118,33 +147,36 @@ public class MainController {
 			@RequestParam(required= false, value = "postcode") Integer postCode,
 			HttpEntity<byte[]> picture){
 		Sharer sharer = this.sharerService.getUser(id);
-		if ( sharer != null ){
-			if ( firstName != null ){
-				sharer.setFirstname(firstName);
-			}
-			if ( lastName != null ){
-				sharer.setLastname(lastName);
-			}
-			if ( telephone != null ){
-				sharer.setTelephone(telephone);
-			}
-			if ( age != null ){
-				sharer.setAge(age);
-			}
-			if ( postCode != null ){
-				sharer.setPostCode(postCode);
-			}
-			if ( sex != null ){
-				sharer.setSex(sex);
-			}
-			if ( picture.getBody()!= null){
-				byte[] pic = picture.getBody();
-				MediaType picType = picture.getHeaders().getContentType();
-				sharer.setProfilePicture(pic);
-				sharer.setProFilePictureType(picType);
-			}
-			this.sharerService.updateUser(sharer);
+		if ( sharer == null ) throw new ResourceNotFoundException ( "user", id);	
+		if ( firstName != null ){
+			sharer.setFirstname(firstName);
 		}
+		if ( lastName != null ){
+			sharer.setLastname(lastName);
+		}
+		if ( telephone != null ){
+			sharer.setTelephone(telephone);
+		}
+		if ( age != null ){
+			sharer.setAge(age);
+		}
+		if ( postCode != null ){
+			sharer.setPostCode(postCode);
+		}
+		if ( sex != null ){
+			if ( sex != 'M' && sex != 'F'){
+				throw new BusinessLogicException("Sex parameter can either be 'M' or 'F'");
+			}
+			sharer.setSex(sex);
+		}
+		if ( picture.getBody()!= null){
+			byte[] pic = picture.getBody();
+			MediaType picType = picture.getHeaders().getContentType();
+			sharer.setProfilePicture(pic);
+			sharer.setProFilePictureType(picType);
+		}
+		if (! this.sharerService.updateUser(sharer)) throw new RuntimeException("User could not be updated :'(");
+		return sharer;
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value="/user/{id:[\\d]+}/product")
@@ -155,14 +187,10 @@ public class MainController {
 			){
 		Product product;
 		Sharer user = this.sharerService.getUser(userId);
-		if ( user == null ){
-			return null; //TODO : err msg
-		}
+		if ( user == null ) throw new ResourceNotFoundException("user", userId);
 		ProductCategory matchingCategory = null;
 		matchingCategory = this.productCategoryService.getById(category);
-		if ( matchingCategory == null ){
-			return null; //TODO : message d'erreur
-		}
+		if ( matchingCategory == null ) throw new ResourceNotFoundException("ProductCategory", category);
 		if ( description == null ){
 			product = this.productService.createProduct(name, matchingCategory, user);
 		}
@@ -177,18 +205,11 @@ public class MainController {
 		return this.productCategoryService.getCategories();
 	}
 	
-
-	/*@RequestMapping(method = RequestMethod.GET, value="/product")
-	public @ResponseBody Collection<Product> getProductByCategory (
-			@RequestParam(required = true, value = "category") String category){
-		
-	}*/
-
 	@RequestMapping(method = RequestMethod.GET, value="/product/{id}")
 	public @ResponseBody Product getProduct(@PathVariable("id")int id){
 		Product product = this.productService.getProduct(id);
-		
-		return product; //TODO : rediriger sur erreur si nul
+		if ( product == null ) throw new ResourceNotFoundException("Product", id);
+		return product; 
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE, value="/product/{id}")
@@ -200,108 +221,77 @@ public class MainController {
 	public @ResponseBody Collection<Product> getProducts(
 			@RequestParam(required= false, value="postcode")Integer postcode,
 			@RequestParam(required=false, value ="category") Integer categoryId){
-		ProductCategory category = null;
-		if ( categoryId != null ){
-			category = this.productCategoryService.getById(categoryId);
+		if ( postcode == null && categoryId == null){
+			return this.productService.findProducts();
 		}
-		if ( category == null ){
-			if ( postcode == null ){ //recherche de tous les produits
-				return this.productService.findProducts();
-			}
-			else{ // recherche par code postal
-				return this.productService.findProducts(postcode);
-			}
+		else if ( postcode != null && categoryId == null ){
+			return this.productService.findProducts(postcode);
+		}
+		else if ( postcode == null && categoryId != null ){
+			ProductCategory category = this.productCategoryService.getById(categoryId);
+			if ( category == null ) throw new ResourceNotFoundException("Category", categoryId);
+			return this.productService.findProducts(category);
 		}
 		else{
-			if ( postcode == null ){ //recherche par categorie
-				return this.productService.findProducts(category);
-			}
-			else{ // recherche par code postal et categorie
-				return this.productService.findProducts( postcode, category );
-			}
+			ProductCategory category = this.productCategoryService.getById(categoryId);
+			if ( category == null ) throw new ResourceNotFoundException("Category", categoryId);
+			return this.productService.findProducts(postcode, category);
 		}
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/product/{id:[\\d]+}/borrow")
 	public @ResponseBody Exchange askProduct(@PathVariable("id") int productId,
-			@RequestParam("borrower") int borrowerId,
-			@RequestParam("lender") int lenderId){
+			@RequestParam("borrower") int borrowerId ){
 		Sharer borrower = this.sharerService.getUser(borrowerId);
-		Sharer lender = this.sharerService.getUser(lenderId);
 		Product product = this.productService.getProduct(productId);
-		if (borrower != null && lender != null && product != null){
-			Exchange exchange = this.exchangeService.createExhange(borrower, lender, product);
-			if ( exchange != null ){
-				return exchange;
-			}
-			else{
-				return null; // msg d'erreur ici
-			}
-		}
-		else{
-			return null; //TODO : msg erreur
-		}
+		if ( borrower == null ) throw new ResourceNotFoundException("user", borrowerId);
+		if ( product == null ) throw new ResourceNotFoundException("product", productId);
+		Exchange exchange = this.exchangeService.createExhange(borrower, product);
+		return exchange;				
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/user/{id:[\\d]+}/borrowed")
 	@ResponseBody Collection<Exchange> getBorrowedProducts(@PathVariable("id") int userId){
 		Sharer borrower = this.sharerService.getUser(userId);
-		if (borrower != null ){
-			Collection<Exchange> exchanges = this.exchangeService.findByBorrower(borrower);
-			if (exchanges != null ){
-				return exchanges;
-			}
+		if ( borrower == null ) throw new ResourceNotFoundException("User", userId);
+		Collection<Exchange> exchanges = this.exchangeService.findByBorrower(borrower);
+		if (exchanges != null ){
+			return exchanges;
 		}
-			return new ArrayList<Exchange> ();
+		return new ArrayList<Exchange> ();
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/user/{id:[\\d]+}/lended")
 	@ResponseBody Collection<Exchange> getLendedProducts(@PathVariable("id") int userId){
 		Sharer lender = this.sharerService.getUser(userId);
-		if (lender!= null ){
-			Collection<Exchange> exchanges = this.exchangeService.findByLender(lender);
-			if (exchanges != null ){
-				return exchanges;
-			}
+		if ( lender == null ) throw new ResourceNotFoundException("User", userId);
+		Collection<Exchange> exchanges = this.exchangeService.findByLender(lender);
+		if (exchanges != null ){
+			return exchanges;
 		}
-			return new ArrayList<Exchange> ();
+		return new ArrayList<Exchange> ();
 	}
 	
 	@RequestMapping(method = RequestMethod.PUT, value="/exchange/{id:[\\d]+}/accept")
 	@ResponseBody Exchange acceptExchange(@PathVariable("id") int exchangeId){
 		Exchange exchange = this.exchangeService.getById(exchangeId);
-		if ( exchange != null ){
-			exchange = this.exchangeService.acceptExchange(exchange);
-			return exchange;
-		}
-		else{
-			//TODO :err msg
-			return null;
-		}
+		if ( exchange == null ) throw new ResourceNotFoundException ( "Exchange", exchangeId );
+		exchange = this.exchangeService.acceptExchange(exchange);
+		return exchange;	
 	}
 	@RequestMapping(method = RequestMethod.PUT, value="/exchange/{id:[\\d]+}/reject")
 	@ResponseBody Exchange rejectExchange(@PathVariable("id") int exchangeId){
 		Exchange exchange = this.exchangeService.getById(exchangeId);
-		if ( exchange != null ){
-			exchange = this.exchangeService.rejectExchange(exchange);
-			return exchange;
-		}
-		else{
-			//TODO :err msg
-			return null;
-		}
+		if ( exchange == null ) throw new ResourceNotFoundException("Exchange", exchangeId);
+		exchange = this.exchangeService.rejectExchange(exchange);
+		return exchange;
 	}
 	@RequestMapping(method=RequestMethod.PUT, value="/exchange/{id:[\\d]+}/complete")
 	@ResponseBody Exchange completeExchange(@PathVariable("id") int exchangeId,
 			@RequestParam("returned") boolean objectReturned){
 		Exchange exchange = this.exchangeService.getById(exchangeId);
-		if ( exchange != null ){
-			exchange = this.exchangeService.setCompleted(exchange, objectReturned);
-			return exchange;
-		}
-		else{
-			//TODO : err msg
-			return null;
-		}
+		if ( exchange == null ) throw new ResourceNotFoundException ( "Exchange", exchangeId);
+		exchange = this.exchangeService.setCompleted(exchange, objectReturned);
+		return exchange;
 	}
 }

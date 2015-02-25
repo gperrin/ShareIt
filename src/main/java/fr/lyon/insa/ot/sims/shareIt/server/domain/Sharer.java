@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 @Entity
 public class Sharer {
 	@Id
-	@GeneratedValue
+	@GeneratedValue()
 	private int id;
 
 	private byte[] profilePicture;

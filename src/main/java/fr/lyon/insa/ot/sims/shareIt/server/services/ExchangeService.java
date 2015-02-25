@@ -13,6 +13,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.ExchangeStatus;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductStatus;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.exceptions.BusinessLogicException;
 
 @Service
 public class ExchangeService implements IExchangeService {
@@ -24,19 +25,18 @@ public class ExchangeService implements IExchangeService {
 	ProductRepository productRepository;
 	
 	@Override
-	public Exchange createExhange(Sharer borrower, Sharer lender, Product product) {
-		if ( product.getStatus().equals(ProductStatus.disponible) && 
-				product.getSharer().equals(lender)){
+	public Exchange createExhange(Sharer borrower, Product product) {
+		if ( product.getStatus().equals(ProductStatus.disponible)){
 			Exchange exchange = new Exchange();
 			exchange.setBorrower(borrower);
-			exchange.setLender(lender);
+			exchange.setLender(product.getSharer());
 			exchange.setProduct(product);
 			exchange.setStatus(ExchangeStatus.issued);
 			this.exchangeRepository.save(exchange);
 			return exchange;
 		}
 		else{
-			return null;
+			throw new BusinessLogicException("Required product is currently unavailable");
 		}
 	}
 
@@ -52,7 +52,7 @@ public class ExchangeService implements IExchangeService {
 			return exchange;
 		}
 		else{
-			return null;
+			throw new BusinessLogicException("This exchange has already either been accepted or refused");
 		}
 		
 	}
@@ -73,7 +73,8 @@ public class ExchangeService implements IExchangeService {
 
 	@Override
 	public Exchange setCompleted(Exchange exchange, boolean objectReturned) {
-		if ( exchange.getProduct().getStatus().equals(ProductStatus.emprunte)){
+		if ( exchange.getProduct().getStatus().equals(ProductStatus.emprunte)
+				&& exchange.getStatus().equals(ExchangeStatus.accepted)){
 			Product product = exchange.getProduct();
 			if ( objectReturned){
 				product.setStatus(ProductStatus.disponible);
@@ -89,7 +90,7 @@ public class ExchangeService implements IExchangeService {
 			return exchange;
 		}
 		else{
-			return null;
+			throw new BusinessLogicException("This exchange has already been completed");
 		}
 	}
 
@@ -106,9 +107,7 @@ public class ExchangeService implements IExchangeService {
 			return exchange;
 		}
 		else{
-			
-		}return null; //TODO msg erreur
-		
+			throw new BusinessLogicException ( "This exchange has already either been accepted or rejected.");	
+		}
 	}
-
 }

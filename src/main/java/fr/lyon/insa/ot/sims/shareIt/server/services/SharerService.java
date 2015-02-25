@@ -3,6 +3,7 @@ package fr.lyon.insa.ot.sims.shareIt.server.services;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
@@ -16,12 +17,24 @@ public class SharerService implements ISharerService{
 	@Autowired
 	SharerRepository sharerRepository;
 
+	private Sharer retryPersist(Sharer sharer){ //quickfixx :)
+		//sharer.setId(sharer.getId());
+		int id = sharer.getId();
+		for ( int i = id+1; i< id+10 ; i++){
+			sharer.setId(i);
+			try{
+				this.sharerRepository.save(sharer);
+				return sharer;
+			}
+			catch(DataIntegrityViolationException e){
+				continue;
+			}
+		}
+		return sharer;
+	}
+	
 	@Override
 	public Sharer createUser(String lastName, String firstName, int postCode) {
-		System.out.println(firstName);
-		System.out.println(lastName);
-		System.out.println(postCode);
-		
 		Sharer newSharer = new Sharer();
 		newSharer.setFirstname(firstName);
 		newSharer.setLastname(lastName);
@@ -34,6 +47,9 @@ public class SharerService implements ISharerService{
 		newSharer.setRating(0);
 		try{
 			this.sharerRepository.save(newSharer);
+		}
+		catch ( DataIntegrityViolationException e){
+			return retryPersist(newSharer);
 		}
 		catch (Exception e){
 			e.printStackTrace();
