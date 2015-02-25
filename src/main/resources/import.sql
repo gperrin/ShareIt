@@ -1,8 +1,19 @@
 -- Initialisation des catégories, laisser même en prod
-insert into product_category values (1, 'outils');
-insert into product_category values (2, 'ustensiles de cuisine');
-insert into product_category values (3, 'vêtements');
-insert into product_category values (4, 'véhicules');
+insert into product_category values (1, 'Animaux');
+insert into product_category values (2, 'Bricolage');
+insert into product_category values (3, 'Cuisine');
+insert into product_category values (4, 'Décoration');
+insert into product_category values (5, 'Instruments');
+insert into product_category values (6, 'Jardinage');
+insert into product_category values (7, 'Livres');
+insert into product_category values (8, 'Multimédia');
+insert into product_category values (9, 'Véhicules');
+insert into product_category values (10, 'Vêtements');
+
+
+
+
+
 
 
 -- Données de test, ne pas les mettre ne prod
