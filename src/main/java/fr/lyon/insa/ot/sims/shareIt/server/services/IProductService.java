@@ -16,6 +16,7 @@ public interface IProductService {
 	public Collection<Product> findProducts(int postcode );
 	public Collection<Product> findProducts(ProductCategory category);
 	public Collection<Product> findProducts(int postcode, ProductCategory category);
+	public Collection<Product> getBySharer(Sharer sharer);
 	
 
 }

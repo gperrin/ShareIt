@@ -179,6 +179,13 @@ public class MainController {
 		return sharer;
 	}
 	
+	@RequestMapping(method = RequestMethod.GET, value="/user/{id:[\\d]+}/product")
+	public @ResponseBody Collection<Product> getProducts(@PathVariable("id") int userId){
+		Sharer sharer = this.sharerService.getUser(userId);
+		if ( sharer == null ) throw new ResourceNotFoundException ( "User", userId);
+		return this.productService.getBySharer(sharer);
+	}
+	
 	@RequestMapping(method = RequestMethod.POST, value="/user/{id:[\\d]+}/product")
 	public @ResponseBody Product createProduct (@PathVariable("id") int userId,
 			@RequestParam(required = true, value = "name") String name,

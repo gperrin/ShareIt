@@ -122,4 +122,9 @@ public class ProductService implements IProductService {
 		return (Collection<Product>) this.productRepository.findAll();
 	}
 
+	@Override
+	public Collection<Product> getBySharer(Sharer sharer) {
+		return this.productRepository.findBySharer(sharer);
+	}
+
 }
