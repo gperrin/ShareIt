@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.MessageRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Message;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
+@Service
 public class MessageService implements IMessageService {
 	
 	@Autowired
