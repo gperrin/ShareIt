@@ -1,9 +1,15 @@
 package fr.lyon.insa.ot.sims.shareIt.server.domain;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import fr.lyon.insa.ot.sims.shareIt.server.beans.DateToStringSerializer;
 
 @Entity
 public class Exchange {
@@ -20,8 +26,10 @@ public class Exchange {
 	private Product product;
 	
 	private ExchangeStatus status;
-	
-	
+	@JsonSerialize(using = DateToStringSerializer.class)
+	private Date startDate;
+	@JsonSerialize(using = DateToStringSerializer.class)
+	private Date endDate;
 	
 	public Exchange(){
 		
@@ -83,15 +91,42 @@ public class Exchange {
 
 
 
+	public Date getStartDate() {
+		return startDate;
+	}
+
+
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
 				+ ((borrower == null) ? 0 : borrower.hashCode());
+		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((lender == null) ? 0 : lender.hashCode());
 		result = prime * result + ((product == null) ? 0 : product.hashCode());
+		result = prime * result
+				+ ((startDate == null) ? 0 : startDate.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
 	}
@@ -112,6 +147,11 @@ public class Exchange {
 				return false;
 		} else if (!borrower.equals(other.borrower))
 			return false;
+		if (endDate == null) {
+			if (other.endDate != null)
+				return false;
+		} else if (!endDate.equals(other.endDate))
+			return false;
 		if (id != other.id)
 			return false;
 		if (lender == null) {
@@ -124,10 +164,18 @@ public class Exchange {
 				return false;
 		} else if (!product.equals(other.product))
 			return false;
+		if (startDate == null) {
+			if (other.startDate != null)
+				return false;
+		} else if (!startDate.equals(other.startDate))
+			return false;
 		if (status != other.status)
 			return false;
 		return true;
 	}
+
+
+
 
 	
 	

@@ -2,6 +2,7 @@ package fr.lyon.insa.ot.sims.shareIt.server.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,14 +26,19 @@ public class ExchangeService implements IExchangeService {
 	ProductRepository productRepository;
 	
 	@Override
-	public Exchange createExhange(Sharer borrower, Product product) {
+	public Exchange createExhange(Sharer borrower, Product product, Date startDate, Date endDate) {
+		Date today = new Date();
 		if ( product.getStatus().equals(ProductStatus.disponible) &&
-				borrower != product.getSharer()){
+				borrower != product.getSharer() && 
+				startDate.compareTo(endDate) <= 0 &&
+				today.getTime()*1000*60*60*24 <= startDate.getTime()){
 			Exchange exchange = new Exchange();
 			exchange.setBorrower(borrower);
 			exchange.setLender(product.getSharer());
 			exchange.setProduct(product);
 			exchange.setStatus(ExchangeStatus.issued);
+			exchange.setStartDate(startDate);
+			exchange.setEndDate(endDate);
 			this.exchangeRepository.save(exchange);
 			return exchange;
 		}

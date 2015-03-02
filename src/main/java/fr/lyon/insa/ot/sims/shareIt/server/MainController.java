@@ -1,7 +1,10 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.services.ISharerService;
 
 @Controller
 public class MainController {
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 	
 	@Autowired
 	SharerRepository sharerRepository;
@@ -255,12 +259,23 @@ public class MainController {
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/product/{id:[\\d]+}/borrow")
 	public @ResponseBody Exchange askProduct(@PathVariable("id") int productId,
-			@RequestParam("borrower") int borrowerId ){
+			@RequestParam("borrower") int borrowerId,
+			@RequestParam("startdate") String startDate,
+			@RequestParam("enddate") String endDate){
 		Sharer borrower = this.sharerService.getUser(borrowerId);
 		Product product = this.productService.getProduct(productId);
 		if ( borrower == null ) throw new ResourceNotFoundException("user", borrowerId);
 		if ( product == null ) throw new ResourceNotFoundException("product", productId);
-		Exchange exchange = this.exchangeService.createExhange(borrower, product);
+		Date sDate = null;
+		Date eDate = null;
+		try {
+			sDate = this.dateFormat.parse(startDate);
+			eDate = this.dateFormat.parse(endDate);
+			if ( sDate == null || eDate == null) System.out.println("ouallah");
+		} catch (ParseException e) {
+			throw new BusinessLogicException(startDate+" or "+endDate+" is not a correct date format.");	
+		}
+		Exchange exchange = this.exchangeService.createExhange(borrower, product, sDate, eDate);
 		return exchange;				
 	}
 	
