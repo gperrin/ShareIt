@@ -3,6 +3,7 @@ package fr.lyon.insa.ot.sims.shareIt.server;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Exchange;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.ExchangeStatus;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Message;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
@@ -263,10 +265,23 @@ public class MainController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/user/{id:[\\d]+}/borrowed")
-	@ResponseBody Collection<Exchange> getBorrowedProducts(@PathVariable("id") int userId){
+	@ResponseBody Collection<Exchange> getBorrowedProducts(@PathVariable("id") int userId,
+			@RequestParam( required = false, value = "status") Integer exchangeStatus){
 		Sharer borrower = this.sharerService.getUser(userId);
 		if ( borrower == null ) throw new ResourceNotFoundException("User", userId);
-		Collection<Exchange> exchanges = this.exchangeService.findByBorrower(borrower);
+		Collection<Exchange> exchanges;
+		if ( exchangeStatus != null ){
+			ExchangeStatus status;
+			try{
+				status = ExchangeStatus.values()[exchangeStatus];
+				exchanges = this.exchangeService.findByBorrower(borrower, status);
+			}catch ( IndexOutOfBoundsException e ){
+				throw new ResourceNotFoundException("Exchange Status", exchangeStatus);
+			}
+		}
+		else{
+			exchanges = this.exchangeService.findByBorrower(borrower);
+		}
 		if (exchanges != null ){
 			return exchanges;
 		}
@@ -274,10 +289,24 @@ public class MainController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/user/{id:[\\d]+}/lended")
-	@ResponseBody Collection<Exchange> getLendedProducts(@PathVariable("id") int userId){
+	@ResponseBody Collection<Exchange> getLendedProducts(@PathVariable("id") int userId,
+			@RequestParam (required = false, value = "status")Integer exchangeStatus){
 		Sharer lender = this.sharerService.getUser(userId);
 		if ( lender == null ) throw new ResourceNotFoundException("User", userId);
-		Collection<Exchange> exchanges = this.exchangeService.findByLender(lender);
+		Collection<Exchange> exchanges ;
+		if ( exchangeStatus != null ){
+			ExchangeStatus status;
+			try{
+				status = ExchangeStatus.values()[exchangeStatus];
+				exchanges = this.exchangeService.findByLender(lender, status);
+			}catch ( IndexOutOfBoundsException e ){
+				throw new ResourceNotFoundException("Exchange Status", exchangeStatus);
+			}
+		}
+		else{
+			exchanges = this.exchangeService.findByLender(lender);
+
+		}
 		if (exchanges != null ){
 			return exchanges;
 		}
@@ -319,5 +348,17 @@ public class MainController {
 	@RequestMapping(method = RequestMethod.GET, value="/messages/{id}")
 	public @ResponseBody Collection<Message> getMessages(@PathVariable("id") int userId){
 		return this.messageService.findMessages(userId);
+	}
+	
+	@RequestMapping(method= RequestMethod.GET, value="/exchange/status")
+	public @ResponseBody Collection<Map<Integer, ExchangeStatus>> getExchangeStatuses (){
+		List<Map<Integer, ExchangeStatus>> result = new ArrayList<>();
+		ExchangeStatus[] statusValues = ExchangeStatus.values();
+		for ( int i = 0 ; i < statusValues.length ; i++ ){
+			Map<Integer, ExchangeStatus>  val = new HashMap<>();
+			val.put(i, statusValues[i]);
+			result.add(val);
+		}
+		return result;
 	}
 }

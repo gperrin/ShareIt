@@ -26,7 +26,8 @@ public class ExchangeService implements IExchangeService {
 	
 	@Override
 	public Exchange createExhange(Sharer borrower, Product product) {
-		if ( product.getStatus().equals(ProductStatus.disponible)){
+		if ( product.getStatus().equals(ProductStatus.disponible) &&
+				borrower != product.getSharer()){
 			Exchange exchange = new Exchange();
 			exchange.setBorrower(borrower);
 			exchange.setLender(product.getSharer());
@@ -109,5 +110,17 @@ public class ExchangeService implements IExchangeService {
 		else{
 			throw new BusinessLogicException ( "This exchange has already either been accepted or rejected.");	
 		}
+	}
+
+	@Override
+	public Collection<Exchange> findByBorrower(Sharer borrower,
+			ExchangeStatus status) {
+		return this.exchangeRepository.findByBorrowerAndStatus(borrower, status);
+	}
+
+	@Override
+	public Collection<Exchange> findByLender(Sharer lender,
+			ExchangeStatus status) {
+		return this.exchangeRepository.findByLenderAndStatus(lender, status);
 	}
 }
