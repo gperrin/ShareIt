@@ -316,8 +316,13 @@ public class MainController {
 		return this.messageService.createMessage(sender, receiver, message);
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value="/messages/{id}")
-	public @ResponseBody Collection<Message> getMessages(@PathVariable("id") int userId){
-		return this.messageService.findMessages(userId);
+	@RequestMapping(method = RequestMethod.GET, value="/contacts/{id}")
+	public @ResponseBody Collection<Sharer> getContacts(@PathVariable("id") int userId){
+		return this.messageService.findContacts(userId);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/messages/{userId}/{contactId}")
+	public @ResponseBody Collection<Message> getMessages(@PathVariable("userId") int userId, @PathVariable("contactId") int contactId){
+		return this.messageService.findMessages(userId, contactId);
 	}
 }
