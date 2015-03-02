@@ -20,12 +20,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Exchange;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.Message;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.BusinessLogicException;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IExchangeService;
+import fr.lyon.insa.ot.sims.shareIt.server.services.IMessageService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IProductCategoryService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.IProductService;
 import fr.lyon.insa.ot.sims.shareIt.server.services.ISharerService;
@@ -49,6 +51,9 @@ public class MainController {
 	
 	@Autowired
 	IExchangeService exchangeService;
+	
+	@Autowired
+	IMessageService messageService;
 	
 	@RequestMapping("/greeting")
     public @ResponseBody String greeting() {
@@ -300,5 +305,19 @@ public class MainController {
 		if ( exchange == null ) throw new ResourceNotFoundException ( "Exchange", exchangeId);
 		exchange = this.exchangeService.setCompleted(exchange, objectReturned);
 		return exchange;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value="/message/")
+	@ResponseStatus (HttpStatus.CREATED) public @ResponseBody Message createMessage(
+			@RequestParam(required = true, value = "sender") int sender,
+			@RequestParam(required = true, value = "receiver") int receiver,
+			@RequestParam(required = true, value = "message") String message
+			){
+		return this.messageService.createMessage(sender, receiver, message);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/messages/{id}")
+	public @ResponseBody Collection<Message> getMessages(@PathVariable("id") int userId){
+		return this.messageService.findMessages(userId);
 	}
 }

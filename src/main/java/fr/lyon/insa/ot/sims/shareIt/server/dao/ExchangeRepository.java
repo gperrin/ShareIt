@@ -9,5 +9,5 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
 public interface ExchangeRepository extends CrudRepository<Exchange, Integer> {
 	public Collection<Exchange> findByBorrower(Sharer borrower);
-	public Collection<Exchange> findByLender ( Sharer lender);
+	public Collection<Exchange> findByLender (Sharer lender);
 }
