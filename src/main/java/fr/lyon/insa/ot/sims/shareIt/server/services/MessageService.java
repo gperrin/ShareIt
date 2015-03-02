@@ -37,14 +37,43 @@ public class MessageService implements IMessageService {
 	}
 
 	@Override
-	public Collection<Message> findMessages(int user) {
+	public Collection<Message> findMessages(int user, int contact) {
 		Sharer sharer = sharerService.getUser(user);
 		Collection<Message> messages = new ArrayList<>();
 		
-		messages.addAll(messageRepository.findBySender(sharer));
-		messages.addAll(messageRepository.findByReceiver(sharer));
+		for(Message m: messageRepository.findBySender(sharer)){
+			if(m.getReceiver().getId() == contact){
+				messages.add(m);
+			}
+		}
+		
+		for(Message m: messageRepository.findByReceiver(sharer)){
+			if(m.getSender().getId() == contact){
+				messages.add(m);
+			}
+		}
 		
 		return messages;
+	}
+
+	@Override
+	public Collection<Sharer> findContacts(int userId) {
+		Sharer sharer = sharerService.getUser(userId);
+		Collection<Sharer> contacts = new ArrayList<>();
+		
+		for(Message m: messageRepository.findBySender(sharer)){
+			if(!contacts.contains(m.getReceiver())){
+				contacts.add(m.getReceiver());
+			}
+		}
+		
+		for(Message m: messageRepository.findByReceiver(sharer)){
+			if(!contacts.contains(m.getSender())){
+				contacts.add(m.getSender());
+			}
+		}
+		
+		return contacts;
 	}
 
 }
