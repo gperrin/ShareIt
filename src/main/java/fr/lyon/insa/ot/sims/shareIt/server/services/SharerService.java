@@ -36,12 +36,12 @@ public class SharerService{
 		newSharer.setFirstname(firstName);
 		newSharer.setLastname(lastName);
 		newSharer.setPostCode(postCode);
-		newSharer.setAge(-1);
+		newSharer.setAge(0);
 		newSharer.setProfilePicture(null);
 		newSharer.setProFilePictureType(null);
 		newSharer.setSex(' ');
 		newSharer.setTelephone("");
-		newSharer.setRating(0);
+		newSharer.setRating(-1);
 		try{
 			this.sharerRepository.save(newSharer);
 		}
