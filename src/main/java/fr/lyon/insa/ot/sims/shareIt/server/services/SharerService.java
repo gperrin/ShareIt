@@ -73,13 +73,13 @@ public class SharerService implements ISharerService{
 
 	@Override
 	public boolean updateUser(Sharer sharer) {
-		try {
+		//try {
 			this.sharerRepository.save(sharer);
-		}
+	/*	}
 		catch ( Exception e ){
 			e.printStackTrace();
 			return false;
-		}
+		}*/
 		return true;
 	}
 

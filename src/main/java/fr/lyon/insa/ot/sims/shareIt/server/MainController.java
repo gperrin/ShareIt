@@ -14,6 +14,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,7 +72,6 @@ public class MainController {
 	public @ResponseBody HashMap<String, Object> test(){
 		HashMap<String, Object> result = new HashMap<>();
 		result.put("gros fail", true);
-		
 		return result;
 	}
 	
@@ -79,6 +80,7 @@ public class MainController {
 	public @ResponseBody Map<String, String> handleResourceNotFound(ResourceNotFoundException exception){
 		Map<String,String> response = new HashMap<>();
 		response.put("cause : ", exception.getMessage());
+		exception.printStackTrace();
 		return response;
 	}
 	@ExceptionHandler ( BusinessLogicException.class )
@@ -86,6 +88,7 @@ public class MainController {
 	public @ResponseBody Map<String, String> handleBusinessLogicException(BusinessLogicException exception){
 		Map<String,String> response = new HashMap<>();
 		response.put("cause : ", exception.getMessage());
+		exception.printStackTrace();
 		return response;
 	}
 	@ExceptionHandler ( RuntimeException.class )
@@ -93,6 +96,7 @@ public class MainController {
 	public @ResponseBody Map<String, String> handleRuntimeException(RuntimeException exception){
 		Map<String,String> response = new HashMap<>();
 		response.put("cause : ", exception.getMessage());
+		exception.printStackTrace();
 		return response;
 	}
 	
@@ -149,7 +153,7 @@ public class MainController {
 		return sharer; 
 	}
 	@RequestMapping(method = RequestMethod.PUT, value = "/user/{id:[\\d]+}")
-	public @ResponseStatus (HttpStatus.OK) Sharer updateUser(@PathVariable("id") int id,
+	public @ResponseStatus (HttpStatus.OK) @ResponseBody Sharer updateUser(@PathVariable("id") int id,
 			@RequestParam(required= false, value = "firstname") String firstName,
 			@RequestParam(required= false, value = "lastname") String lastName,
 			@RequestParam(required= false, value = "phone") String telephone,
@@ -180,7 +184,9 @@ public class MainController {
 			}
 			sharer.setSex(sex);
 		}
-		if ( picture.getBody()!= null){
+		if (picture != null &&  picture.getBody()!= null && picture.getHeaders() != null && 
+				picture.getHeaders().getContentType()!= null &&
+				picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_PNG)){
 			byte[] pic = picture.getBody();
 			MediaType picType = picture.getHeaders().getContentType();
 			sharer.setProfilePicture(pic);
@@ -271,7 +277,6 @@ public class MainController {
 		try {
 			sDate = this.dateFormat.parse(startDate);
 			eDate = this.dateFormat.parse(endDate);
-			if ( sDate == null || eDate == null) System.out.println("ouallah");
 		} catch (ParseException e) {
 			throw new BusinessLogicException(startDate+" or "+endDate+" is not a correct date format.");	
 		}
