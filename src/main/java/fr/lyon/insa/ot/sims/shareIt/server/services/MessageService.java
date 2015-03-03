@@ -12,7 +12,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Message;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
 @Service
-public class MessageService implements IMessageService {
+public class MessageService{
 	
 	@Autowired
 	SharerService sharerService;
@@ -20,7 +20,6 @@ public class MessageService implements IMessageService {
 	@Autowired
 	MessageRepository messageRepository;
 
-	@Override
 	public Message createMessage(int sender, int receiver, String text) {
 		Sharer fullSender = sharerService.getUser(sender);
 		Sharer fullReceiver = sharerService.getUser(receiver);
@@ -36,7 +35,6 @@ public class MessageService implements IMessageService {
 		return null;
 	}
 
-	@Override
 	public Collection<Message> findMessages(int user, int contact) {
 		Sharer sharer = sharerService.getUser(user);
 		Collection<Message> messages = new ArrayList<>();
@@ -56,7 +54,6 @@ public class MessageService implements IMessageService {
 		return messages;
 	}
 
-	@Override
 	public Collection<Sharer> findContacts(int userId) {
 		Sharer sharer = sharerService.getUser(userId);
 		Collection<Sharer> contacts = new ArrayList<>();
@@ -75,5 +72,4 @@ public class MessageService implements IMessageService {
 		
 		return contacts;
 	}
-
 }

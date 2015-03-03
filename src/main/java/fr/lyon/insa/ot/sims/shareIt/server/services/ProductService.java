@@ -14,15 +14,14 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 
 @Service
-public class ProductService implements IProductService {
+public class ProductService{
 
 	@Autowired
 	ProductRepository productRepository;
 	
 	@Autowired
-	ISharerService sharerService;
+	SharerService sharerService;
 	
-	@Override
 	public Product createProduct(String name, ProductCategory category,
 			Sharer sharer) {
 		Product product = new Product();
@@ -41,7 +40,6 @@ public class ProductService implements IProductService {
 		return product;
 	}
 
-	@Override
 	public Product createProduct(String name, ProductCategory category,
 			Sharer sharer, String description) {
 		Product product = new Product();
@@ -60,9 +58,6 @@ public class ProductService implements IProductService {
 		return product;
 	}
 
-	
-
-	@Override
 	public Product getProduct(int id) {
 		Product product = null;
 		try{
@@ -75,7 +70,6 @@ public class ProductService implements IProductService {
 		return product;
 	}
 
-	@Override
 	public void removeProduct(int objectId) {
 		Product product = this.productRepository.findOne(objectId);
 		if ( product != null ){
@@ -87,7 +81,6 @@ public class ProductService implements IProductService {
 		}
 	}
 
-	@Override
 	public Collection<Product> findProducts(int postcode) {
 		Collection<Sharer> usersInTown = new ArrayList<>();
 		usersInTown.addAll( this.sharerService.getSharers(postcode));
@@ -98,14 +91,12 @@ public class ProductService implements IProductService {
 		return products;
 	}
 
-	@Override
 	public Collection<Product> findProducts(ProductCategory category) {
 		Collection<Product> products = new ArrayList<>();
 		products.addAll(this.productRepository.findByCategory(category));
 		return products;
 	}
 
-	@Override
 	public Collection<Product> findProducts( int postcode, ProductCategory category) {
 		Collection<Product> products = new ArrayList<>();
 		products.addAll(this.productRepository.findByCategory(category));
@@ -117,12 +108,11 @@ public class ProductService implements IProductService {
 		}
 		return filteredResults;
 	}
-	@Override
+
 	public Collection<Product> findProducts(){
 		return (Collection<Product>) this.productRepository.findAll();
 	}
 
-	@Override
 	public Collection<Product> getBySharer(Sharer sharer) {
 		return this.productRepository.findBySharer(sharer);
 	}

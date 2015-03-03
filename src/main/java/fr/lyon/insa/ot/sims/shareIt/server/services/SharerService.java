@@ -9,10 +9,8 @@ import org.springframework.stereotype.Service;
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
-
-
 @Service
-public class SharerService implements ISharerService{
+public class SharerService{
 
 	@Autowired
 	SharerRepository sharerRepository;
@@ -33,7 +31,6 @@ public class SharerService implements ISharerService{
 		return sharer;
 	}
 	
-	@Override
 	public Sharer createUser(String lastName, String firstName, int postCode) {
 		Sharer newSharer = new Sharer();
 		newSharer.setFirstname(firstName);
@@ -58,7 +55,6 @@ public class SharerService implements ISharerService{
 		return newSharer;
 	}
 
-	@Override
 	public Sharer getUser(int sharerId) {
 		Sharer sharer = null;
 		try{
@@ -71,24 +67,18 @@ public class SharerService implements ISharerService{
 		return sharer;
 	}
 
-	@Override
 	public boolean updateUser(Sharer sharer) {
-		//try {
+		try {
 			this.sharerRepository.save(sharer);
-	/*	}
+	}
 		catch ( Exception e ){
 			e.printStackTrace();
 			return false;
-		}*/
+		}
 		return true;
 	}
 
-	@Override
 	public Collection<Sharer> getSharers(int postcode) {
 		return this.sharerRepository.findByPostCode(postcode);
-	}
-
-	
-	
-	
+	}	
 }

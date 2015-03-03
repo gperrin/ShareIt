@@ -1,0 +1,89 @@
+package fr.lyon.insa.ot.sims.shareIt.server;
+
+import java.util.Collection;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
+
+@Controller
+public class ProductController extends GenericController{
+	
+	
+	@RequestMapping(method = RequestMethod.GET, value="/user/{id:[\\d]+}/product")
+	public @ResponseBody Collection<Product> getProducts(@PathVariable("id") int userId){
+		Sharer sharer = this.sharerService.getUser(userId);
+		if ( sharer == null ) throw new ResourceNotFoundException ( "User", userId);
+		return this.productService.getBySharer(sharer);
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value="/user/{id:[\\d]+}/product")
+	public @ResponseBody Product createProduct (@PathVariable("id") int userId,
+			@RequestParam(required = true, value = "name") String name,
+			@RequestParam(required = false, value = "description") String description,
+			@RequestParam(required = true, value = "category") int category
+			){
+		Product product;
+		Sharer user = this.sharerService.getUser(userId);
+		if ( user == null ) throw new ResourceNotFoundException("user", userId);
+		ProductCategory matchingCategory = null;
+		matchingCategory = this.productCategoryService.getById(category);
+		if ( matchingCategory == null ) throw new ResourceNotFoundException("ProductCategory", category);
+		if ( description == null ){
+			product = this.productService.createProduct(name, matchingCategory, user);
+		}
+		else{
+			product = this.productService.createProduct(name, matchingCategory, user, description);
+		}
+		return product;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/product/category")
+	public @ResponseBody Collection<ProductCategory> getProductCategories(){
+		return this.productCategoryService.getCategories();
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/product/{id}")
+	public @ResponseBody Product getProduct(@PathVariable("id")int id){
+		Product product = this.productService.getProduct(id);
+		if ( product == null ) throw new ResourceNotFoundException("Product", id);
+		return product; 
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, value="/product/{id}")
+	public @ResponseStatus(HttpStatus.OK) void removeProduct(@PathVariable("id")int objectId){
+		this.productService.removeProduct(objectId);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, value="/product")
+	public @ResponseBody Collection<Product> getProducts(
+			@RequestParam(required= false, value="postcode")Integer postcode,
+			@RequestParam(required=false, value ="category") Integer categoryId){
+		if ( postcode == null && categoryId == null){
+			return this.productService.findProducts();
+		}
+		else if ( postcode != null && categoryId == null ){
+			return this.productService.findProducts(postcode);
+		}
+		else if ( postcode == null && categoryId != null ){
+			ProductCategory category = this.productCategoryService.getById(categoryId);
+			if ( category == null ) throw new ResourceNotFoundException("Category", categoryId);
+			return this.productService.findProducts(category);
+		}
+		else{
+			ProductCategory category = this.productCategoryService.getById(categoryId);
+			if ( category == null ) throw new ResourceNotFoundException("Category", categoryId);
+			return this.productService.findProducts(postcode, category);
+		}
+	}
+}

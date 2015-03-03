@@ -17,7 +17,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.BusinessLogicException;
 
 @Service
-public class ExchangeService implements IExchangeService {
+public class ExchangeService{
 
 	@Autowired
 	ExchangeRepository exchangeRepository;
@@ -25,7 +25,6 @@ public class ExchangeService implements IExchangeService {
 	@Autowired
 	ProductRepository productRepository;
 	
-	@Override
 	public Exchange createExhange(Sharer borrower, Product product, Date startDate, Date endDate) {
 		Date today = new Date();
 		if ( product.getStatus().equals(ProductStatus.disponible) &&
@@ -47,7 +46,6 @@ public class ExchangeService implements IExchangeService {
 		}
 	}
 
-	@Override
 	public Exchange acceptExchange(Exchange exchange) {
 		if ( exchange.getProduct().getStatus().equals(ProductStatus.disponible)
 				&& exchange.getStatus().equals(ExchangeStatus.issued)){
@@ -64,21 +62,18 @@ public class ExchangeService implements IExchangeService {
 		
 	}
 
-	@Override
 	public Collection<Exchange> findByBorrower(Sharer borrower) {
 		Collection<Exchange> exchanges = new ArrayList<>();
 		exchanges.addAll(this.exchangeRepository.findByBorrower(borrower));
 		return exchanges;
 	}
 
-	@Override
 	public Collection<Exchange> findByLender(Sharer lender) {
 		Collection<Exchange> exchanges = new ArrayList<>();
 		exchanges.addAll(this.exchangeRepository.findByLender(lender));
 		return exchanges;
 	}
 
-	@Override
 	public Exchange setCompleted(Exchange exchange, boolean objectReturned) {
 		if ( exchange.getProduct().getStatus().equals(ProductStatus.emprunte)
 				&& exchange.getStatus().equals(ExchangeStatus.accepted)){
@@ -101,12 +96,10 @@ public class ExchangeService implements IExchangeService {
 		}
 	}
 
-	@Override
 	public Exchange getById(int id) {
 		return this.exchangeRepository.findOne(id);
 	}
 
-	@Override
 	public Exchange rejectExchange(Exchange exchange) {
 		if ( exchange.getStatus().equals(ExchangeStatus.issued)){
 			exchange.setStatus(ExchangeStatus.refused);
@@ -118,13 +111,11 @@ public class ExchangeService implements IExchangeService {
 		}
 	}
 
-	@Override
 	public Collection<Exchange> findByBorrower(Sharer borrower,
 			ExchangeStatus status) {
 		return this.exchangeRepository.findByBorrowerAndStatus(borrower, status);
 	}
 
-	@Override
 	public Collection<Exchange> findByLender(Sharer lender,
 			ExchangeStatus status) {
 		return this.exchangeRepository.findByLenderAndStatus(lender, status);
