@@ -4,6 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import fr.lyon.insa.ot.sims.shareIt.server.beans.IEventProcessor;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Exchange;
 
 @Entity
@@ -17,6 +18,8 @@ public class ExchangeAcceptedEvent extends UserEvent{
 		
 	}
 
+	
+	
 	public Exchange getExchange() {
 		return exchange;
 	}
@@ -49,6 +52,13 @@ public class ExchangeAcceptedEvent extends UserEvent{
 		} else if (!exchange.equals(other.exchange))
 			return false;
 		return true;
+	}
+
+
+
+	@Override
+	public void processEvent(IEventProcessor eventProcessor) {
+		eventProcessor.processExchangeAcceptedEvent(this);
 	}
 
 	

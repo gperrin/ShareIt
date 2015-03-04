@@ -14,8 +14,11 @@ insert into product_category values (10, 'Vêtements');
 
 
 -- Données de test, ne pas les mettre ne prod
-insert into sharer (id, firstname, lastname, post_code, age, rating, sex) values (1, 'jean', 'paul', 69100, 25, -1, 'M');
-insert into sharer (id, firstname, lastname, post_code, age, rating, sex) values (2, 'mickey', 'mouse', 89000, 89, -1, 'M');
+insert into user_stats values ( 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+insert into user_stats values ( 2, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+insert into sharer (id, firstname, lastname, post_code, age, rating, sex, user_stats_id) values (1, 'jean', 'paul', 69100, 25, -1, 'M', 1);
+insert into sharer (id, firstname, lastname, post_code, age, rating, sex, user_stats_id) values (2, 'mickey', 'mouse', 89000, 89, -1, 'M', 2);
 
 insert into product values (1, 'C est une super perceuse :)', 'Perceuse', 0, 1, 1);
 insert into product values (2, 'C est un marteau :)', 'Marteau', 0, 2, 1);

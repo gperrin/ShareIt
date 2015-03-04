@@ -4,6 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
+import fr.lyon.insa.ot.sims.shareIt.server.beans.IEventProcessor;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
 @Entity
@@ -63,6 +64,11 @@ public class UserRatedEvent extends UserEvent{
 				.doubleToLongBits(other.rating))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void processEvent(IEventProcessor eventProcessor) {
+		eventProcessor.processUserRatedEvent(this);
 	}
 	
 }

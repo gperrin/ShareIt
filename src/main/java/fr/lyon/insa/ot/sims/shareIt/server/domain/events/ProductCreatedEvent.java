@@ -4,6 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import fr.lyon.insa.ot.sims.shareIt.server.beans.IEventProcessor;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 
 @Entity
@@ -45,5 +46,9 @@ public class ProductCreatedEvent extends UserEvent{
 		} else if (!product.equals(other.product))
 			return false;
 		return true;
+	}
+	@Override
+	public void processEvent(IEventProcessor eventProcessor) {
+		eventProcessor.processProductCreatedEvent(this);
 	}
 }

@@ -7,13 +7,18 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
+import fr.lyon.insa.ot.sims.shareIt.server.dao.UserStatsRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.UserStats;
 
 @Service
 public class SharerService{
 
 	@Autowired
 	SharerRepository sharerRepository;
+	
+	@Autowired
+	UserStatsRepository userStatsRepository;
 
 	private Sharer retryPersist(Sharer sharer){ //quickfixx :)
 		//sharer.setId(sharer.getId());
@@ -42,16 +47,10 @@ public class SharerService{
 		newSharer.setSex(' ');
 		newSharer.setTelephone("");
 		newSharer.setRating(-1);
-		try{
-			this.sharerRepository.save(newSharer);
-		}
-		catch ( DataIntegrityViolationException e){
-			return retryPersist(newSharer);
-		}
-		catch (Exception e){
-			e.printStackTrace();
-			return null;
-		}
+		UserStats userStats = new UserStats();
+		userStats = this.userStatsRepository.save(userStats);
+		newSharer.setUserStats(userStats);
+		this.sharerRepository.save(newSharer);
 		return newSharer;
 	}
 
@@ -69,6 +68,7 @@ public class SharerService{
 
 	public boolean updateUser(Sharer sharer) {
 		try {
+			this.userStatsRepository.save(sharer.getUserStats());
 			this.sharerRepository.save(sharer);
 	}
 		catch ( Exception e ){

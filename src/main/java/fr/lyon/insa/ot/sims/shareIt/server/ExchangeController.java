@@ -179,4 +179,11 @@ public class ExchangeController extends GenericController{
 		userRatedEvent.setUser(user);
 		this.userEventService.persistEvent(userRatedEvent);
 	}
+	
+	@RequestMapping ( method = RequestMethod.GET, value = "/exchange/{id:[\\d]+}")
+	public @ResponseBody Exchange getExchangeById ( @PathVariable("id") int id ){
+		Exchange exchange = this.exchangeService.getById(id);
+		if( exchange == null )throw new ResourceNotFoundException("Exchange", id);
+		return exchange;
+	}
 }

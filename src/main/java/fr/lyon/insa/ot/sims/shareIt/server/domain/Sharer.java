@@ -5,6 +5,7 @@ import java.util.Arrays;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import org.springframework.http.MediaType;
 
@@ -24,6 +25,8 @@ public class Sharer {
 	private float rating;
 	private int postCode;
 	private String telephone;
+	@OneToOne
+	private UserStats userStats;
 	
 	public int getId() {
 		return id;
@@ -85,6 +88,12 @@ public class Sharer {
 	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
+	public UserStats getUserStats() {
+		return userStats;
+	}
+	public void setUserStats(UserStats userStats) {
+		this.userStats = userStats;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -105,6 +114,8 @@ public class Sharer {
 		result = prime * result + sex;
 		result = prime * result
 				+ ((telephone == null) ? 0 : telephone.hashCode());
+		result = prime * result
+				+ ((userStats == null) ? 0 : userStats.hashCode());
 		return result;
 	}
 	@Override
@@ -148,9 +159,12 @@ public class Sharer {
 				return false;
 		} else if (!telephone.equals(other.telephone))
 			return false;
+		if (userStats == null) {
+			if (other.userStats != null)
+				return false;
+		} else if (!userStats.equals(other.userStats))
+			return false;
 		return true;
 	}
-	
-	
 
 }

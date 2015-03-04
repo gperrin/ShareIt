@@ -4,6 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import fr.lyon.insa.ot.sims.shareIt.server.beans.IEventProcessor;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Message;
 
 @Entity
@@ -47,5 +48,11 @@ public class MessageCreatedEvent extends UserEvent{
 		} else if (!message.equals(other.message))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void processEvent(IEventProcessor eventProcessor) {
+		eventProcessor.processMessageCreatedEvent(this);
+		
 	}	
 }

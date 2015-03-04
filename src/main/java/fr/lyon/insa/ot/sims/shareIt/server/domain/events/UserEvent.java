@@ -10,6 +10,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import fr.lyon.insa.ot.sims.shareIt.server.beans.IEventProcessor;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
 @Entity
@@ -26,6 +27,8 @@ public abstract class UserEvent {
 
 	private Date date;
 
+	public abstract void processEvent(IEventProcessor eventProcessor);
+	
 	public Sharer getUser() {
 		return user;
 	}

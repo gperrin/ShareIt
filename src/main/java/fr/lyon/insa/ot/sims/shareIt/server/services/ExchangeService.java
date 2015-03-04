@@ -124,6 +124,7 @@ public class ExchangeService{
 	
 	public boolean rateExchange ( Exchange exchange, Sharer rater, double note ){
 		if ( note <0 || note > 5) throw new BusinessLogicException ("Note should be between 0 and 5");
+		if ( ! exchange.getStatus().equals(ExchangeStatus.completed)) throw new BusinessLogicException ( "You can only rate an exchange once it has been completed");
 		if ( rater.equals(exchange.getBorrower())){
 			if ( exchange.getBorrowerRating() != -1 ) throw new BusinessLogicException("You can only rate an exchange once");
 			exchange.setBorrowerRating(note);
