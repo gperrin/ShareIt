@@ -38,6 +38,8 @@ public class ExchangeService{
 			exchange.setStatus(ExchangeStatus.issued);
 			exchange.setStartDate(startDate);
 			exchange.setEndDate(endDate);
+			exchange.setBorrowerRating(-1);
+			exchange.setLenderRating(-1);
 			this.exchangeRepository.save(exchange);
 			return exchange;
 		}
@@ -121,12 +123,15 @@ public class ExchangeService{
 	}
 	
 	public boolean rateExchange ( Exchange exchange, Sharer rater, double note ){
+		if ( note <0 || note > 5) throw new BusinessLogicException ("Note should be between 0 and 5");
 		if ( rater.equals(exchange.getBorrower())){
+			if ( exchange.getBorrowerRating() != -1 ) throw new BusinessLogicException("You can only rate an exchange once");
 			exchange.setBorrowerRating(note);
 			this.exchangeRepository.save(exchange);
 			return true;
 		}
 		else if ( rater.equals(exchange.getLender())){
+			if ( exchange.getLenderRating() != -1 ) throw new BusinessLogicException("You can only rate an exchange once");
 			exchange.setLenderRating(note);
 			this.exchangeRepository.save(exchange);
 			return true;
