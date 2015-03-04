@@ -1,6 +1,7 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Message;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.MessageCreatedEvent;
 
 @Controller
 public class MessageController extends GenericController{
@@ -20,9 +22,15 @@ public class MessageController extends GenericController{
 	@ResponseStatus (HttpStatus.CREATED) public @ResponseBody Message createMessage(
 			@RequestParam(required = true, value = "sender") int sender,
 			@RequestParam(required = true, value = "receiver") int receiver,
-			@RequestParam(required = true, value = "message") String message
+			@RequestParam(required = true, value = "message") String text
 			){
-		return this.messageService.createMessage(sender, receiver, message);
+		Message message = this.messageService.createMessage(sender, receiver, text);
+		MessageCreatedEvent messageCreatedEvent = new MessageCreatedEvent();
+		messageCreatedEvent .setDate(new Date());
+		messageCreatedEvent.setMessage(message);
+		messageCreatedEvent.setUser(message.getSender());
+		this.userEventService.persistEvent(messageCreatedEvent);
+		return message;
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value="/contacts/{id}")

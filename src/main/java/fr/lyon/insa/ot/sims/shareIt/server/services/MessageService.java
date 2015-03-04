@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import fr.lyon.insa.ot.sims.shareIt.server.dao.MessageRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Message;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 
 @Service
 public class MessageService{
@@ -23,53 +24,48 @@ public class MessageService{
 	public Message createMessage(int sender, int receiver, String text) {
 		Sharer fullSender = sharerService.getUser(sender);
 		Sharer fullReceiver = sharerService.getUser(receiver);
-		
+		if ( fullSender == null )throw new ResourceNotFoundException("user", sender);
+		if ( fullReceiver == null )throw new ResourceNotFoundException("user", receiver);
 		Message message = new Message();
 		message.setSender(fullSender);
 		message.setReceiver(fullReceiver);
 		message.setMessage(text);
 		message.setDate(new Date());
-		
 		messageRepository.save(message);
-		
-		return null;
+		return message;
 	}
 
 	public Collection<Message> findMessages(int user, int contact) {
 		Sharer sharer = sharerService.getUser(user);
+		if ( sharer == null )throw new ResourceNotFoundException("user", user);
 		Collection<Message> messages = new ArrayList<>();
-		
 		for(Message m: messageRepository.findBySender(sharer)){
 			if(m.getReceiver().getId() == contact){
 				messages.add(m);
 			}
 		}
-		
 		for(Message m: messageRepository.findByReceiver(sharer)){
 			if(m.getSender().getId() == contact){
 				messages.add(m);
 			}
 		}
-		
 		return messages;
 	}
 
 	public Collection<Sharer> findContacts(int userId) {
 		Sharer sharer = sharerService.getUser(userId);
+		if ( sharer == null )throw new ResourceNotFoundException("user", userId);
 		Collection<Sharer> contacts = new ArrayList<>();
-		
 		for(Message m: messageRepository.findBySender(sharer)){
 			if(!contacts.contains(m.getReceiver())){
 				contacts.add(m.getReceiver());
 			}
 		}
-		
 		for(Message m: messageRepository.findByReceiver(sharer)){
 			if(!contacts.contains(m.getSender())){
 				contacts.add(m.getSender());
 			}
 		}
-		
 		return contacts;
 	}
 }

@@ -1,6 +1,7 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductCategory;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.ProductCreatedEvent;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.ProductDeletedEvent;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 
 @Controller
@@ -45,6 +48,11 @@ public class ProductController extends GenericController{
 		else{
 			product = this.productService.createProduct(name, matchingCategory, user, description);
 		}
+		ProductCreatedEvent productCreatedEvent= new ProductCreatedEvent ();
+		productCreatedEvent.setDate(new Date());
+		productCreatedEvent.setProduct(product);
+		productCreatedEvent.setUser(user);
+		this.userEventService.persistEvent(productCreatedEvent);
 		return product;
 	}
 	
@@ -63,6 +71,12 @@ public class ProductController extends GenericController{
 	@RequestMapping(method = RequestMethod.DELETE, value="/product/{id}")
 	public @ResponseStatus(HttpStatus.OK) void removeProduct(@PathVariable("id")int objectId){
 		this.productService.removeProduct(objectId);
+		ProductDeletedEvent productDeletedEvent = new ProductDeletedEvent();
+		productDeletedEvent.setDate(new Date());
+		Product product = this.productService.getProduct(objectId);
+		productDeletedEvent.setProduct(product);
+		productDeletedEvent.setUser(product.getSharer());
+		this.userEventService.persistEvent(productDeletedEvent);
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, value="/product")

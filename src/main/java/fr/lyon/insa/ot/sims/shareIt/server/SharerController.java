@@ -1,5 +1,7 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
+import java.util.Date;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.UserCreatedEvent;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.UserUpdatedEvent;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.BusinessLogicException;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 
@@ -47,6 +51,10 @@ public class SharerController extends GenericController{
 		if (sex != null || telephone != null || age != null){
 			this.sharerService.updateUser(sharer);
 		}
+		UserCreatedEvent userCreatedEvent = new UserCreatedEvent();
+		userCreatedEvent.setDate(new Date());
+		userCreatedEvent.setUser(sharer);
+		this.userEventService.persistEvent(userCreatedEvent);
 		return sharer;
 	}
 	@RequestMapping(method = RequestMethod.GET, value="/user/{id:[\\d]+}")
@@ -96,6 +104,10 @@ public class SharerController extends GenericController{
 			sharer.setProFilePictureType(picType);
 		}
 		if (! this.sharerService.updateUser(sharer)) throw new RuntimeException("User could not be updated :'(");
+		UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent();
+		userUpdatedEvent.setDate(new Date());
+		userUpdatedEvent.setUser(sharer);
+		this.userEventService.persistEvent(userUpdatedEvent);
 		return sharer;
 	}
 }

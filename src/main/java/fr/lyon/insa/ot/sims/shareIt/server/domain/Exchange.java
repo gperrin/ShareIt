@@ -24,7 +24,8 @@ public class Exchange {
 	private Sharer borrower;
 	@ManyToOne
 	private Product product;
-	
+	private double lenderRating;
+	private double borrowerRating;
 	private ExchangeStatus status;
 	@JsonSerialize(using = DateToStringSerializer.class)
 	private Date startDate;
@@ -115,15 +116,44 @@ public class Exchange {
 
 
 
+	public double getLenderRating() {
+		return lenderRating;
+	}
+
+
+
+	public void setLenderRating(double lenderRating) {
+		this.lenderRating = lenderRating;
+	}
+
+
+
+	public double getBorrowerRating() {
+		return borrowerRating;
+	}
+
+
+
+	public void setBorrowerRating(double borrowerRating) {
+		this.borrowerRating = borrowerRating;
+	}
+
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
 				+ ((borrower == null) ? 0 : borrower.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(borrowerRating);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
 		result = prime * result + id;
 		result = prime * result + ((lender == null) ? 0 : lender.hashCode());
+		temp = Double.doubleToLongBits(lenderRating);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((product == null) ? 0 : product.hashCode());
 		result = prime * result
 				+ ((startDate == null) ? 0 : startDate.hashCode());
@@ -147,6 +177,9 @@ public class Exchange {
 				return false;
 		} else if (!borrower.equals(other.borrower))
 			return false;
+		if (Double.doubleToLongBits(borrowerRating) != Double
+				.doubleToLongBits(other.borrowerRating))
+			return false;
 		if (endDate == null) {
 			if (other.endDate != null)
 				return false;
@@ -158,6 +191,9 @@ public class Exchange {
 			if (other.lender != null)
 				return false;
 		} else if (!lender.equals(other.lender))
+			return false;
+		if (Double.doubleToLongBits(lenderRating) != Double
+				.doubleToLongBits(other.lenderRating))
 			return false;
 		if (product == null) {
 			if (other.product != null)
@@ -176,7 +212,7 @@ public class Exchange {
 
 
 
-
+	
 	
 	
 }

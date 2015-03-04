@@ -20,6 +20,11 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Exchange;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ExchangeStatus;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.ExchangeAcceptedEvent;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.ExchangeAskedEvent;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.ExchangeEndedEvent;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.ExchangeRejectedEvent;
+import fr.lyon.insa.ot.sims.shareIt.server.domain.events.UserRatedEvent;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.BusinessLogicException;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 
@@ -45,6 +50,11 @@ public class ExchangeController extends GenericController{
 			throw new BusinessLogicException(startDate+" or "+endDate+" is not a correct date format.");	
 		}
 		Exchange exchange = this.exchangeService.createExhange(borrower, product, sDate, eDate);
+		ExchangeAskedEvent exchangeAskedEvent = new ExchangeAskedEvent ( );
+		exchangeAskedEvent.setUser(borrower);
+		exchangeAskedEvent.setExchange(exchange);
+		exchangeAskedEvent.setDate(new Date());
+		this.userEventService.persistEvent(exchangeAskedEvent);
 		return exchange;				
 	}
 	
@@ -102,6 +112,11 @@ public class ExchangeController extends GenericController{
 		Exchange exchange = this.exchangeService.getById(exchangeId);
 		if ( exchange == null ) throw new ResourceNotFoundException ( "Exchange", exchangeId );
 		exchange = this.exchangeService.acceptExchange(exchange);
+		ExchangeAcceptedEvent exchangeAcceptedEvent = new ExchangeAcceptedEvent ( );
+		exchangeAcceptedEvent.setDate(new Date());
+		exchangeAcceptedEvent.setExchange(exchange);
+		exchangeAcceptedEvent.setUser(exchange.getLender());
+		this.userEventService.persistEvent(exchangeAcceptedEvent);
 		return exchange;	
 	}
 	@RequestMapping(method = RequestMethod.PUT, value="/exchange/{id:[\\d]+}/reject")
@@ -109,6 +124,11 @@ public class ExchangeController extends GenericController{
 		Exchange exchange = this.exchangeService.getById(exchangeId);
 		if ( exchange == null ) throw new ResourceNotFoundException("Exchange", exchangeId);
 		exchange = this.exchangeService.rejectExchange(exchange);
+		ExchangeRejectedEvent exchangeRejectedEvent = new ExchangeRejectedEvent ();
+		exchangeRejectedEvent.setDate(new Date());
+		exchangeRejectedEvent.setExchange(exchange);
+		exchangeRejectedEvent.setUser(exchange.getLender());
+		this.userEventService.persistEvent(exchangeRejectedEvent);
 		return exchange;
 	}
 	@RequestMapping(method=RequestMethod.PUT, value="/exchange/{id:[\\d]+}/complete")
@@ -117,6 +137,12 @@ public class ExchangeController extends GenericController{
 		Exchange exchange = this.exchangeService.getById(exchangeId);
 		if ( exchange == null ) throw new ResourceNotFoundException ( "Exchange", exchangeId);
 		exchange = this.exchangeService.setCompleted(exchange, objectReturned);
+		ExchangeEndedEvent exchangeCompletedEvent = new ExchangeEndedEvent();
+		exchangeCompletedEvent.setDate(new Date());
+		exchangeCompletedEvent.setExchange(exchange);
+		exchangeCompletedEvent.setObjectReturned(objectReturned);
+		exchangeCompletedEvent.setUser(exchange.getLender());
+		this.userEventService.persistEvent(exchangeCompletedEvent);
 		return exchange;
 	}
 	@RequestMapping(method= RequestMethod.GET, value="/exchange/status")
@@ -129,5 +155,28 @@ public class ExchangeController extends GenericController{
 			result.add(val);
 		}
 		return result;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value="/exchange/{id:[\\d]+}/rate")
+	public @ResponseBody void rateExchange(@PathVariable("id") int exchangeId, 
+			@RequestParam("user") int userId, @RequestParam("note") double note){
+		Exchange exchange = this.exchangeService.getById(exchangeId);
+		if ( exchange == null ) throw new ResourceNotFoundException("Exchange", exchangeId);
+		Sharer rater = this.sharerService.getUser(userId);
+		if ( rater == null ) throw new ResourceNotFoundException("User", userId);
+		this.exchangeService.rateExchange(exchange, rater, note);
+		UserRatedEvent userRatedEvent = new UserRatedEvent();
+		userRatedEvent.setDate(new Date());
+		userRatedEvent.setRater(rater);
+		userRatedEvent.setRating(note);
+		Sharer user = null;
+		if ( exchange.getLender().equals(rater)){
+			user = exchange.getBorrower();
+		}
+		else if ( exchange.getBorrower().equals(rater)){
+			user = exchange.getLender();
+		}
+		userRatedEvent.setUser(user);
+		this.userEventService.persistEvent(userRatedEvent);
 	}
 }

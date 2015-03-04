@@ -83,7 +83,6 @@ public class ExchangeService{
 				this.productRepository.save(product);
 			}
 			else{
-				//TODO : modifier negativement le rating de l'emprunteur
 				product.setStatus(ProductStatus.perdu);
 				this.productRepository.save(product);
 
@@ -119,5 +118,21 @@ public class ExchangeService{
 	public Collection<Exchange> findByLender(Sharer lender,
 			ExchangeStatus status) {
 		return this.exchangeRepository.findByLenderAndStatus(lender, status);
+	}
+	
+	public boolean rateExchange ( Exchange exchange, Sharer rater, double note ){
+		if ( rater.equals(exchange.getBorrower())){
+			exchange.setBorrowerRating(note);
+			this.exchangeRepository.save(exchange);
+			return true;
+		}
+		else if ( rater.equals(exchange.getLender())){
+			exchange.setLenderRating(note);
+			this.exchangeRepository.save(exchange);
+			return true;
+		}
+		else{
+			throw new BusinessLogicException ( "You need to be involved in an exchange to be allowed to rate it." );
+		}
 	}
 }
