@@ -4,7 +4,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.UserStats;
 
 public class UserStatsBuilder {
 
-	private UserStats userStats;
+	private UserStats userStats = new UserStats();
 	
 	public UserStatsBuilder id ( int id ){
 		userStats.setId(id);

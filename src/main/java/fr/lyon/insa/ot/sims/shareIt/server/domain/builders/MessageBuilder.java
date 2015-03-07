@@ -6,7 +6,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Message;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
 public class MessageBuilder {
-	private Message message;
+	private Message message = new Message ();
 	
 	public MessageBuilder id ( long id ){
 		message.setId(id);

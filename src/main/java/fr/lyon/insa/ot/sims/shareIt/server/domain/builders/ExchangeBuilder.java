@@ -8,7 +8,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
 
 public class ExchangeBuilder {
-	private Exchange exchange;
+	private Exchange exchange = new Exchange ();
 	
 	public ExchangeBuilder id ( int id ){
 		exchange.setId(id);

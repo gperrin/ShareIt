@@ -6,7 +6,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductStatus;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 
 public class ProductBuilder {
-	private Product product;
+	private Product product = new Product ();
 	
 	public ProductBuilder id ( int id ){
 		product.setId(id);
