@@ -31,6 +31,10 @@ public class UserStats {
 		this.notes34=0;
 		this.notes45=0;
 	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public int getNbLended() {
 		return nbLended;

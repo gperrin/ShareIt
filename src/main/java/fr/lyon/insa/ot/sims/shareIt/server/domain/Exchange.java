@@ -38,6 +38,12 @@ public class Exchange {
 
 
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
 	public Sharer getLender() {
 		return lender;
 	}

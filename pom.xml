@@ -6,6 +6,14 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>shareIt</name>
 	<packaging>war</packaging>
+	
+	<properties>
+		<start-class>shareIt.server.Application</start-class>
+      	<integration-tests.skip>true</integration-tests.skip>
+      	<rest-assured.version>2.4.0</rest-assured.version>
+      	<assertj.version>1.7.0</assertj.version>
+		<mockito.version>1.10.8</mockito.version>
+    </properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -48,10 +56,40 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
+		<dependency>
+		  <groupId>org.springframework.boot</groupId>
+		  <artifactId>spring-boot-starter-test</artifactId>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>com.jayway.restassured</groupId>
+		  <artifactId>rest-assured</artifactId>
+		  <version>${rest-assured.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>junit</groupId>
+		  <artifactId>junit</artifactId>
+		  <scope>test</scope>
+		</dependency>
+		<dependency>
+		  <groupId>org.assertj</groupId>
+		  <artifactId>assertj-core</artifactId>
+		  <version>${assertj.version}</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.mockito</groupId>
+		  <artifactId>mockito-all</artifactId>
+		  <version>${mockito.version}</version>
+		</dependency>
 	</dependencies>
-	<properties>
-		<start-class>shareIt.server.Application</start-class>
-	</properties>
+	<profiles>
+      <profile>
+        <id>integration</id>
+        <properties>
+           <integration-tests.skip>false</integration-tests.skip>
+        </properties>
+      </profile>
+    </profiles>
 	<build>
 		<finalName>shareit</finalName>
 		<plugins>
@@ -66,6 +104,23 @@
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
+			</plugin>
+			<plugin>
+			  <artifactId>maven-failsafe-plugin</artifactId>
+			  <executions>
+			    <execution>
+			      <id>integration-test</id>
+			      <goals>
+			        <goal>integration-test</goal>
+			      </goals>
+			      <configuration>
+			        <skipTests>${integration-tests.skip}</skipTests>
+			        <includes>
+			          <include>**/*IT.class</include>
+			        </includes>
+			      </configuration>
+			    </execution>
+			  </executions>
 			</plugin>
 		</plugins>
 	</build>
