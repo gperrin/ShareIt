@@ -3,7 +3,6 @@ package fr.lyon.insa.ot.sims.shareIt.server;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.is;
-import org.hamcrest.core.*;
 
 import java.util.Date;
 
@@ -20,6 +19,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.jayway.restassured.RestAssured;
 
+import fr.lyon.insa.ot.sims.shareIt.server.dao.ProductRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.dao.UserEventRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.dao.UserStatsRepository;
@@ -45,11 +45,14 @@ public class SharerControllerIT {
 	UserStatsRepository userStatsRepository;
 	@Autowired
 	UserEventRepository userEventRepository;
+	@Autowired
+	ProductRepository productRepository;
 	private int user1Id;
 	private int user2Id;
 	 @Before
 	  public void setUp() {
 		 userEventRepository.deleteAll();
+		 productRepository.deleteAll();
 		 sharerRepository.deleteAll();
 		 userStatsRepository.deleteAll(); 
 		 UserStats userStats = new UserStatsBuilder().build();

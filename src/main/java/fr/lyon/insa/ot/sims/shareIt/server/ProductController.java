@@ -31,6 +31,7 @@ public class ProductController extends GenericController{
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value="/user/{id:[\\d]+}/product")
+	@ResponseStatus(HttpStatus.CREATED)
 	public @ResponseBody Product createProduct (@PathVariable("id") int userId,
 			@RequestParam(required = true, value = "name") String name,
 			@RequestParam(required = false, value = "description") String description,
