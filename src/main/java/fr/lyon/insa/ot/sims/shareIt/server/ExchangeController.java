@@ -186,4 +186,12 @@ public class ExchangeController extends GenericController{
 		if( exchange == null )throw new ResourceNotFoundException("Exchange", id);
 		return exchange;
 	}
+	
+	@RequestMapping ( method = RequestMethod.PUT, value = "/exchange/{id:[\\d]+}/confirm")
+	public @ResponseBody Exchange confirmExchange ( @PathVariable ( "id" )int id ){
+		Exchange exchange = this.exchangeService.getById(id);
+		if ( exchange == null ) throw new ResourceNotFoundException("Exchange", id);
+		exchange = this.exchangeService.confirmExchange(exchange);
+		return exchange;
+	}
 }

@@ -78,7 +78,7 @@ public class ExchangeService{
 
 	public Exchange setCompleted(Exchange exchange, boolean objectReturned) {
 		if ( exchange.getProduct().getStatus().equals(ProductStatus.emprunte)
-				&& exchange.getStatus().equals(ExchangeStatus.accepted)){
+				&& exchange.getStatus().equals(ExchangeStatus.borrowed)){
 			Product product = exchange.getProduct();
 			if ( objectReturned){
 				product.setStatus(ProductStatus.disponible);
@@ -102,13 +102,13 @@ public class ExchangeService{
 	}
 
 	public Exchange rejectExchange(Exchange exchange) {
-		if ( exchange.getStatus().equals(ExchangeStatus.issued)){
+		if ( exchange.getStatus().equals(ExchangeStatus.issued)|| exchange.getStatus().equals(ExchangeStatus.accepted)){
 			exchange.setStatus(ExchangeStatus.refused);
 			this.exchangeRepository.save(exchange);
 			return exchange;
 		}
 		else{
-			throw new BusinessLogicException ( "This exchange has already either been accepted or rejected.");	
+			throw new BusinessLogicException ( "This exchange has already either been confirmed or rejected.");	
 		}
 	}
 
@@ -140,5 +140,12 @@ public class ExchangeService{
 		else{
 			throw new BusinessLogicException ( "You need to be involved in an exchange to be allowed to rate it." );
 		}
+	}
+	
+	public Exchange confirmExchange ( Exchange exchange ){
+		if ( !exchange.getStatus().equals(ExchangeStatus.accepted)) throw new BusinessLogicException ("You only can confirm accepted exchanges.");
+		exchange.setStatus(ExchangeStatus.borrowed);
+		exchange = this.exchangeRepository.save(exchange);
+		return exchange;
 	}
 }
