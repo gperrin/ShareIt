@@ -3,6 +3,7 @@ package fr.lyon.insa.ot.sims.shareIt.server;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.is;
+import org.hamcrest.core.*;
 
 import java.util.Date;
 
@@ -45,6 +46,7 @@ public class SharerControllerIT {
 	@Autowired
 	UserEventRepository userEventRepository;
 	private int user1Id;
+	private int user2Id;
 	 @Before
 	  public void setUp() {
 		 userEventRepository.deleteAll();
@@ -62,7 +64,26 @@ public class SharerControllerIT {
 		 user1Id= sharer.getId();
 		 userCreatedEvent.setUser(sharer);
 		 this.userEventRepository.save(userCreatedEvent);
-	    RestAssured.port = serverPort;
+		 UserStats userStats2 = new UserStats();
+		 userStats2 = userStatsRepository.save(userStats2 );
+		 UserCreatedEvent userCreatedEvent2 = new UserCreatedEvent();
+		 userCreatedEvent2.setDate(new Date());
+		 Sharer sharer2 = new SharerBuilder().firstname("Jean")
+				 .lastname("Paul")
+				 .age(24)
+				 .postCode(42100)
+				 .userStats(userStats2)
+				 .sex('M')
+				 .profilePicture(null)
+				 .profilePictureType(null)
+				 .rating(0)
+				 .telephone("")
+				 .build();
+		 sharer2 = this.sharerRepository.save(sharer2);
+		 user2Id= sharer2.getId();
+		 userCreatedEvent2.setUser(sharer2);
+		 this.userEventRepository.save(userCreatedEvent2);
+		 RestAssured.port = serverPort;
 	  }
 	 
 	 @Test
@@ -83,7 +104,6 @@ public class SharerControllerIT {
 	 }
 	 @Test
 	 public void getUserShouldReturnSavedUser ( ){
-		 
 		 when()
 		 	.get("/user/"+user1Id)
 	 	.then()
@@ -93,5 +113,20 @@ public class SharerControllerIT {
 		 	.body("age", is(12))
 		 	.body("postCode", is (69100 ))
 		 	.body("id", is(user1Id));
+	 }
+	 @Test
+	 public void updateUserShouldReturnSavedUser(){
+		 given()
+		 	.param("phone","0123456789")
+		 .when()
+		 	.put("/user/"+user2Id)
+		 .then()
+		 	.statusCode(HttpStatus.SC_OK)
+		 	.body( "firstname", is("Jean"))
+		 	.body("lastname",is("Paul"))
+		 	.body("age", is(24))
+		 	.body("postCode", is(42100))
+		 	.body("telephone", is("0123456789"))
+		 	.body("sex", is("M"));
 	 }
 }
