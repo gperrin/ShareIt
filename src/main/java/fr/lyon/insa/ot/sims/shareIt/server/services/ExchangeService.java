@@ -15,6 +15,7 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Product;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.ProductStatus;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 import fr.lyon.insa.ot.sims.shareIt.server.exceptions.BusinessLogicException;
+import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 
 @Service
 public class ExchangeService{
@@ -154,6 +155,7 @@ public class ExchangeService{
 
 	public int getNumberOfAwaitingExchanges(int userId) {
 		Sharer user = sharerService.getUser(userId);
+		if ( user == null ) throw new ResourceNotFoundException ( "Sharer", userId);
 		return exchangeRepository.findByLenderAndStatus(user, ExchangeStatus.issued).size();
 	}
 }

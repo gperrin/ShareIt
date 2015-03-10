@@ -1,14 +1,11 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
-import static com.jayway.restassured.RestAssured.get;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
@@ -22,8 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
+import com.jayway.restassured.config.EncoderConfig;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.ProductCategoryRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.dao.ProductRepository;
@@ -98,7 +94,8 @@ public class ProductControllerIT {
 		product1 = this.productRepository.save(product1);
 		this.product1Id= product1.getId();
 		RestAssured.port = serverPort;
-		//RestAssured.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
+		RestAssured.config = RestAssured.config().encoderConfig(EncoderConfig.encoderConfig()
+                .defaultContentCharset("UTF-8"));
 	}
 	@Test
 	public void createProductShouldReturnSavedProduct(){
@@ -129,6 +126,7 @@ public class ProductControllerIT {
 	@Test
 	public void getProductCategoryShouldReturnCategories(){
 		given()
+		
 			.contentType("application/json; charset=UTF-8")
 		.when()
 			.get("/product/category")

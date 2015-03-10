@@ -57,7 +57,8 @@ public class ProductController extends GenericController{
 		return product;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value="/product/category")
+	@RequestMapping(method = RequestMethod.GET, value="/product/category",
+			produces = "application/json; charset=utf-8")
 	public @ResponseBody Collection<ProductCategory> getProductCategories(){
 		return this.productCategoryService.getCategories();
 	}
