@@ -194,4 +194,9 @@ public class ExchangeController extends GenericController{
 		exchange = this.exchangeService.confirmExchange(exchange);
 		return exchange;
 	}
+	
+	@RequestMapping ( method = RequestMethod.GET, value = "/exchange/{id:[\\d]+}/awaiting")
+	public @ResponseBody int getAwaitingExchangesNumber ( @PathVariable("id") int id ){
+		return exchangeService.getNumberOfAwaitingExchanges(id);
+	}
 }

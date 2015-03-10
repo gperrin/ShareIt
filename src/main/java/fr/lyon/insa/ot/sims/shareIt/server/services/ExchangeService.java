@@ -25,6 +25,9 @@ public class ExchangeService{
 	@Autowired
 	ProductRepository productRepository;
 	
+	@Autowired
+	SharerService sharerService;
+	
 	public Exchange createExhange(Sharer borrower, Product product, Date startDate, Date endDate) {
 		Date today = new Date();
 		if ( product.getStatus().equals(ProductStatus.disponible) &&
@@ -147,5 +150,10 @@ public class ExchangeService{
 		exchange.setStatus(ExchangeStatus.borrowed);
 		exchange = this.exchangeRepository.save(exchange);
 		return exchange;
+	}
+
+	public int getNumberOfAwaitingExchanges(int userId) {
+		Sharer user = sharerService.getUser(userId);
+		return exchangeRepository.findByLenderAndStatus(user, ExchangeStatus.issued).size();
 	}
 }
