@@ -3,10 +3,12 @@ package fr.lyon.insa.ot.sims.shareIt.server;
 import static com.jayway.restassured.RestAssured.get;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.*;
-import org.hamcrest.collection.*;
+import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.*;
+
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.junit.Before;
@@ -20,7 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.response.Response;
 
 import fr.lyon.insa.ot.sims.shareIt.server.dao.ProductCategoryRepository;
@@ -96,6 +98,7 @@ public class ProductControllerIT {
 		product1 = this.productRepository.save(product1);
 		this.product1Id= product1.getId();
 		RestAssured.port = serverPort;
+		//RestAssured.config = newConfig().encoderConfig(encoderConfig().defaultContentCharset("UTF-8"));
 	}
 	@Test
 	public void createProductShouldReturnSavedProduct(){
@@ -125,13 +128,22 @@ public class ProductControllerIT {
 	}
 	@Test
 	public void getProductCategoryShouldReturnCategories(){
-		when()
+		given()
+			.contentType("application/json; charset=UTF-8")
+		.when()
 			.get("/product/category")
 		.then()
 			.statusCode(HttpStatus.SC_OK)
-			.body("$[1,10].name", containsInAnyOrder("Animaux", "Bricolage", "Cuisine",
+			.body("name", containsInAnyOrder("Animaux", "Bricolage", "Cuisine",
 					"Décoration", "Instruments", "Jardinage", "Livres", "Multimédia",
 					"Véhicules", "Vêtements"));
+					
+		/*Response response = get("/product/category");
+		List list = response.jsonPath().getList("{it.name}");
+		System.out.println(list.size());
+		assertEquals(10, list.size());
+		assertThat(list, hasItems("",""));*/
+		
 	}
 	
 }
