@@ -4,7 +4,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
-
+import static org.hamcrest.Matchers.*;
 import java.util.Date;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -56,6 +56,8 @@ public class ProductControllerIT {
 	ProductCategoryRepository productCategoryRepository;
 	private int user1Id;
 	private int product1Id;
+	private int user2Id;
+	private int product2Id;
 	
 	@Before
 	public void setUp(){
@@ -93,6 +95,38 @@ public class ProductControllerIT {
 			.build();
 		product1 = this.productRepository.save(product1);
 		this.product1Id= product1.getId();
+		
+		UserStats user2Stats = new UserStats();
+		user2Stats = this.userStatsRepository.save(user2Stats);
+		Sharer user2 = new SharerBuilder()
+				.firstname("Mike")
+				.lastname("Tyson")
+				.postCode(89000)
+				.userStats(user2Stats)
+				.age(35)
+				.profilePicture(null)
+				.profilePictureType(null)
+				.telephone(null)
+				.sex('M')
+				.telephone("0123786789")
+				.build();
+		user1 = this.sharerRepository.save(user2);
+		this.user2Id= user2.getId();
+		UserCreatedEvent user2CreatedEvent = new UserCreatedEvent();
+		user2CreatedEvent.setDate(new Date());
+		user2CreatedEvent.setUser(user2);
+		this.userEventRepository.save(user2CreatedEvent);
+		
+		ProductCategory instruments= productCategoryRepository.findOne(5);
+		Product product2 = new ProductBuilder()
+			.category(instruments)
+			.name("Violon")
+			.description("violon")
+			.sharer(user2)
+			.build();
+		product2 = this.productRepository.save(product2);
+		this.product2Id= product2.getId();
+		
 		RestAssured.port = serverPort;
 		RestAssured.config = RestAssured.config().encoderConfig(EncoderConfig.encoderConfig()
                 .defaultContentCharset("UTF-8"));
@@ -133,15 +167,28 @@ public class ProductControllerIT {
 		.then()
 			.statusCode(HttpStatus.SC_OK)
 			.body("name", containsInAnyOrder("Animaux", "Bricolage", "Cuisine",
-					"Décoration", "Instruments", "Jardinage", "Livres", "Multimédia",
-					"Véhicules", "Vêtements"));
-					
-		/*Response response = get("/product/category");
-		List list = response.jsonPath().getList("{it.name}");
-		System.out.println(list.size());
-		assertEquals(10, list.size());
-		assertThat(list, hasItems("",""));*/
-		
+					"DÃ©coration", "Instruments", "Jardinage", "Livres", "MultimÃ©dia",
+					"VÃ©hicules", "VÃªtements")); //l'encodage des caractères est bon sur le serveur mais 
+					// pas en 8tf-8 en utilisant rest assured, pas sûr de pourquoi	
+	}
+	@Test
+	public void getProductByPostCodeAndCategoryShouldReturnOneProduct(){
+		given()
+			.param("postcode",69100)
+			.param("category", 2)
+		.when()
+			.get("/product")
+		.then()
+			.statusCode(HttpStatus.SC_OK)
+			.body("name", hasItems("Marteau"));
+	}
+	@Test
+	public void getProductShouldReturnAllProducts(){
+		when()
+			.get("/product")
+		.then()
+			.statusCode(HttpStatus.SC_OK)
+			.body("name", containsInAnyOrder("Marteau", "Violon"));
 	}
 	
 }
