@@ -3,6 +3,7 @@ package fr.lyon.insa.ot.sims.shareIt.server.services;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,9 @@ public class ProductService{
 	
 	@Autowired
 	SharerService sharerService;
+	
+	@Autowired
+	ProductCategoryService productCategoryService;
 	
 	public Product createProduct(String name, ProductCategory category,
 			Sharer sharer) {
@@ -80,33 +84,28 @@ public class ProductService{
 			throw new ResourceNotFoundException("Product", objectId);
 		}
 	}
-
-	public Collection<Product> findProducts(int postcode) {
-		Collection<Sharer> usersInTown = new ArrayList<>();
-		usersInTown.addAll( this.sharerService.getSharers(postcode));
-		Collection<Product> products = new ArrayList<>();
-		for(Sharer s: usersInTown){
-			products.addAll(this.productRepository.findBySharer(s));
-		}
-		return products;
-	}
-
-	public Collection<Product> findProducts(ProductCategory category) {
-		Collection<Product> products = new ArrayList<>();
-		products.addAll(this.productRepository.findByCategory(category));
-		return products;
-	}
-
-	public Collection<Product> findProducts( int postcode, ProductCategory category) {
-		Collection<Product> products = new ArrayList<>();
-		products.addAll(this.productRepository.findByCategory(category));
-		Collection<Product> filteredResults = new ArrayList<>();
-		for ( Product product : products ){
-			if ( product.getSharer().getPostCode() == postcode){
-				filteredResults.add(product);
+	
+	public Collection<Product> findProducts(Integer postcode, Integer categoryId, String name){
+		Collection<Product> result = this.findProducts();
+		
+	    if (categoryId != null) {
+	    	ProductCategory category = this.productCategoryService.getById(categoryId);
+	    	result = CollectionUtils.intersection(result, this.productRepository.findByCategory(category));
+	    }
+	    if (postcode != null) {
+	    	Collection<Sharer> usersInTown = new ArrayList<>();
+			usersInTown.addAll( this.sharerService.getSharers(postcode));
+			Collection<Product> products = new ArrayList<>();
+			for(Sharer s: usersInTown){
+				products.addAll(this.productRepository.findBySharer(s));
 			}
-		}
-		return filteredResults;
+			result = CollectionUtils.intersection(result, products);
+	    }
+	    if (name != null && !name.isEmpty()) {
+	    	result = CollectionUtils.intersection(result, this.productRepository.findByNameLike(name));
+	    }
+	    
+		return result;
 	}
 
 	public Collection<Product> findProducts(){

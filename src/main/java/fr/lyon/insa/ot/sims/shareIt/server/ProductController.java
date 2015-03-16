@@ -84,22 +84,8 @@ public class ProductController extends GenericController{
 	@RequestMapping(method = RequestMethod.GET, value="/product")
 	public @ResponseBody Collection<Product> getProducts(
 			@RequestParam(required= false, value="postcode")Integer postcode,
-			@RequestParam(required=false, value ="category") Integer categoryId){
-		if ( postcode == null && categoryId == null){
-			return this.productService.findProducts();
-		}
-		else if ( postcode != null && categoryId == null ){
-			return this.productService.findProducts(postcode);
-		}
-		else if ( postcode == null && categoryId != null ){
-			ProductCategory category = this.productCategoryService.getById(categoryId);
-			if ( category == null ) throw new ResourceNotFoundException("Category", categoryId);
-			return this.productService.findProducts(category);
-		}
-		else{
-			ProductCategory category = this.productCategoryService.getById(categoryId);
-			if ( category == null ) throw new ResourceNotFoundException("Category", categoryId);
-			return this.productService.findProducts(postcode, category);
-		}
+			@RequestParam(required=false, value ="category") Integer categoryId,
+			@RequestParam(required=false, value = "name") String name){
+		return this.productService.findProducts(postcode, categoryId, name);
 	}
 }
