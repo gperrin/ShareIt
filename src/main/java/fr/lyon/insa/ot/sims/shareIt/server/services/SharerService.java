@@ -6,10 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+
 import fr.lyon.insa.ot.sims.shareIt.server.dao.SharerRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.dao.UserStatsRepository;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 import fr.lyon.insa.ot.sims.shareIt.server.domain.UserStats;
+import fr.lyon.insa.ot.sims.shareIt.server.exceptions.ResourceNotFoundException;
 
 @Service
 public class SharerService{
@@ -19,6 +24,8 @@ public class SharerService{
 	
 	@Autowired
 	UserStatsRepository userStatsRepository;
+	
+	private GeometryFactory geometryFactory = new GeometryFactory();
 
 	private Sharer retryPersist(Sharer sharer){ //quickfixx :)
 		//sharer.setId(sharer.getId());
@@ -33,6 +40,15 @@ public class SharerService{
 				continue;
 			}
 		}
+		return sharer;
+	}
+	
+	public Sharer updateLocation ( int sharerId, double xLoc, double yLoc){
+		Sharer sharer = this.sharerRepository.findOne(sharerId);
+		if ( sharer == null )throw new ResourceNotFoundException("User", sharerId);
+		Point location = this.geometryFactory.createPoint(new Coordinate ( xLoc, yLoc));
+		sharer.setLocation(location);
+		sharer = this.sharerRepository.save(sharer);
 		return sharer;
 	}
 	

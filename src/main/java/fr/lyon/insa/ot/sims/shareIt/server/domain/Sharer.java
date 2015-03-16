@@ -9,13 +9,16 @@ import javax.persistence.OneToOne;
 
 import org.springframework.http.MediaType;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
+
 
 @Entity
 public class Sharer {
 	@Id
 	@GeneratedValue()
 	private int id;
-
+	private Geometry location;
 	private byte[] profilePicture;
 	private MediaType proFilePictureType;
 	private String lastname;
@@ -28,6 +31,13 @@ public class Sharer {
 	@OneToOne
 	private UserStats userStats;
 	
+	
+	public Point getLocation() {
+		return (Point)location;
+	}
+	public void setLocation(Point location) {
+		this.location = location;
+	}
 	public int getId() {
 		return id;
 	}
@@ -105,6 +115,8 @@ public class Sharer {
 		result = prime * result + id;
 		result = prime * result
 				+ ((lastname == null) ? 0 : lastname.hashCode());
+		result = prime * result
+				+ ((location == null) ? 0 : location.hashCode());
 		result = prime * result + postCode;
 		result = prime
 				* result
@@ -142,6 +154,11 @@ public class Sharer {
 				return false;
 		} else if (!lastname.equals(other.lastname))
 			return false;
+		if (location == null) {
+			if (other.location != null)
+				return false;
+		} else if (!location.equals(other.location))
+			return false;
 		if (postCode != other.postCode)
 			return false;
 		if (proFilePictureType == null) {
@@ -167,5 +184,6 @@ public class Sharer {
 			return false;
 		return true;
 	}
+	
 
 }

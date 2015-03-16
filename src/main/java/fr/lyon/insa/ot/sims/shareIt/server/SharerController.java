@@ -97,7 +97,9 @@ public class SharerController extends GenericController{
 		}
 		if (picture != null &&  picture.getBody()!= null && picture.getHeaders() != null && 
 				picture.getHeaders().getContentType()!= null &&
-				picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_PNG)){
+				(picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_GIF)||
+						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_JPEG)||
+						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_PNG))){
 			byte[] pic = picture.getBody();
 			MediaType picType = picture.getHeaders().getContentType();
 			sharer.setProfilePicture(pic);
@@ -109,5 +111,11 @@ public class SharerController extends GenericController{
 		userUpdatedEvent.setUser(sharer);
 		this.userEventService.persistEvent(userUpdatedEvent);
 		return sharer;
+	}
+	
+	@RequestMapping(method = RequestMethod.PUT, value = "/user/{id:[\\d]+}/location")
+	public @ResponseBody Sharer updateLocation(@PathVariable("id")int id, @RequestParam(value = "x", required=true )double x, 
+			@RequestParam(value = "y", required = true)double y){
+		return this.sharerService.updateLocation(id, x, y);
 	}
 }

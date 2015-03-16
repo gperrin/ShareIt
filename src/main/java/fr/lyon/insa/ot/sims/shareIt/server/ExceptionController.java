@@ -39,7 +39,7 @@ public class ExceptionController implements ErrorController{
 	public @ResponseBody Map<String, String> handleRuntimeException(RuntimeException exception){
 		Map<String,String> response = new HashMap<>();
 		response.put("cause : ", exception.getMessage());
-		//exception.printStackTrace();
+		exception.printStackTrace();
 		return response;
 	}
 	@Override
