@@ -95,11 +95,11 @@ public class SharerController extends GenericController{
 			}
 			sharer.setSex(sex);
 		}
-		if (picture != null &&  picture.getBody()!= null && picture.getHeaders() != null && 
+		if (picture != null &&  picture.getBody()!= null )/*&& picture.getHeaders() != null && 
 				picture.getHeaders().getContentType()!= null &&
 				(picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_GIF)||
 						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_JPEG)||
-						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_PNG))){
+						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_PNG)))*/{
 			byte[] pic = picture.getBody();
 			MediaType picType = picture.getHeaders().getContentType();
 			sharer.setProfilePicture(pic);
