@@ -14,6 +14,8 @@
       	<assertj.version>1.7.0</assertj.version>
 		<mockito.version>1.10.8</mockito.version>
 		<geotools.version>14-SNAPSHOT</geotools.version>
+		<postgis.version>1.52</postgis.version>
+		<jts.version>1.13</jts.version>
     </properties>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -39,15 +41,15 @@
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.1-901-1.jdbc4</version>
-		</dependency>
-		<dependency>
+		</dependency>-->
+		<!-- <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-undertow</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-solr</artifactId>
@@ -88,12 +90,19 @@
 		  <artifactId>mockito-all</artifactId>
 		  <version>${mockito.version}</version>
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.postgis</groupId>
+			<artifactId>postgis-jdbc</artifactId>
+			<version>${postgis.version}</version>
+			<scope>provided</scope>
+		</dependency>-->
 		<dependency>
-		  <groupId>org.geotools</groupId>
-		  <artifactId>gt-jdbc</artifactId>
-		  <version>${geotools.version}</version>
+			<groupId>com.vividsolutions</groupId>
+			<artifactId>jts</artifactId>
+			<version>${jts.version}</version>
+			<scope>provided</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 		  <groupId>org.geotools</groupId>
 		  <artifactId>gt-geojson</artifactId>
 		  <version>${geotools.version}</version>
@@ -102,12 +111,38 @@
 		  <groupId>org.geotools</groupId>
 		  <artifactId>gt-api</artifactId>
 		  <version>${geotools.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 		    <groupId>com.github.bedatadriven</groupId>
 		    <artifactId>jackson-datatype-jts</artifactId>
 		    <version>1.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.postgresql</groupId>
+		    <artifactId>postgresql</artifactId>
+		    <version>9.3-1102-jdbc41</version>
+		</dependency>
+		
+		<dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>4.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hibernate-core</artifactId>
+                    <groupId>org.hibernate</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>postgis-jdbc</artifactId>
+                    <groupId>org.postgis</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>postgresql</artifactId>
+                    <groupId>postgresql</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+		
 	</dependencies>
 	<profiles>
       <profile>
@@ -152,11 +187,16 @@
 		</plugins>
 	</build>
 	<repositories>
-	<repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net repository</name>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
+		<repository>
+	        <id>maven-central</id>
+	        <url>http://repo1.maven.org/maven2</url>
+	        <layout>default</layout>
+	    </repository>
+		<repository>
+		  <id>maven2-repository.dev.java.net</id>
+		  <name>Java.net Repository for Maven</name>
+		  <url>http://download.java.net/maven/2/</url>
+		</repository>
         <repository>
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
@@ -170,10 +210,18 @@
           <name>Boundless Maven Repository</name>
           <url>http://repo.boundlessgeo.com/main</url>
         </repository>
-        <repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
+		<repository>
+            <id>Hibernate Spatial repo</id>
+            <url>http://www.hibernatespatial.org/repository</url>
+        </repository>
+	    <repository>
+			    <id>jitpack.io</id>
+			    <url>https://jitpack.io</url>
 		</repository>
+		<repository>
+            <id>JBOSS</id>
+            <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+        </repository>
 	</repositories>
 
 </project>

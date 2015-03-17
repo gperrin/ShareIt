@@ -7,9 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.Type;
 import org.springframework.http.MediaType;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 
@@ -18,7 +18,8 @@ public class Sharer {
 	@Id
 	@GeneratedValue()
 	private int id;
-	private Geometry location;
+	@Type(type="org.hibernate.spatial.GeometryType")
+	private Point location;
 	private byte[] profilePicture;
 	private MediaType proFilePictureType;
 	private String lastname;
@@ -33,7 +34,7 @@ public class Sharer {
 	
 	
 	public Point getLocation() {
-		return (Point)location;
+		return location;
 	}
 	public void setLocation(Point location) {
 		this.location = location;
