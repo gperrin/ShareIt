@@ -19,8 +19,8 @@ public class Sharer {
 	@Id
 	@GeneratedValue()
 	private int id;
-	//@Type(type="org.hibernate.spatial.GeometryType")
-	@Column(name = "geometry", columnDefinition="Geometry", nullable = true) 
+	@Type(type="org.hibernate.spatial.GeometryType")
+	@Column(name = "location", columnDefinition="Geometry", nullable = true) 
 	private Point location;
 	private byte[] profilePicture;
 	private MediaType proFilePictureType;

@@ -94,15 +94,13 @@
 			<groupId>org.postgis</groupId>
 			<artifactId>postgis-jdbc</artifactId>
 			<version>${postgis.version}</version>
-			<scope>provided</scope>
 		</dependency>-->
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
 			<version>${jts.version}</version>
-			<scope>provided</scope>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 		  <groupId>org.geotools</groupId>
 		  <artifactId>gt-geojson</artifactId>
 		  <version>${geotools.version}</version>
@@ -111,7 +109,7 @@
 		  <groupId>org.geotools</groupId>
 		  <artifactId>gt-api</artifactId>
 		  <version>${geotools.version}</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 		    <groupId>com.github.bedatadriven</groupId>
 		    <artifactId>jackson-datatype-jts</artifactId>
@@ -132,10 +130,10 @@
                     <artifactId>hibernate-core</artifactId>
                     <groupId>org.hibernate</groupId>
                 </exclusion>
-                <exclusion>
+                <!-- <exclusion>
                     <artifactId>postgis-jdbc</artifactId>
                     <groupId>org.postgis</groupId>
-                </exclusion>
+                </exclusion>-->
                 <exclusion>
                     <artifactId>postgresql</artifactId>
                     <groupId>postgresql</groupId>

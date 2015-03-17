@@ -10,7 +10,7 @@ insert into product_category values (8, 'Multimédia');
 insert into product_category values (9, 'Véhicules');
 insert into product_category values (10, 'Vêtements');
 
-
+CREATE INDEX sharer_location_gist ON sharer USING GIST (location);
 
 
 -- Données de test, ne pas les mettre ne prod
