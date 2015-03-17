@@ -115,5 +115,8 @@ public class ProductService{
 	public Collection<Product> getBySharer(Sharer sharer) {
 		return this.productRepository.findBySharer(sharer);
 	}
+	public Product updateProduct ( Product product){
+		return this.productRepository.save(product);
+	}
 
 }

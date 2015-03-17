@@ -88,4 +88,22 @@ public class ProductController extends GenericController{
 			@RequestParam(required=false, value = "name") String name){
 		return this.productService.findProducts(postcode, categoryId, name);
 	}
+	@RequestMapping ( method = RequestMethod.PUT, value = "/product/{id:[\\d]+}")
+	public @ResponseBody Product updateProduct (@PathVariable("id")int id,
+			@RequestParam(value="category", required =false )Integer categoryId,
+			@RequestParam(value = "name", required = false)String name,
+			@RequestParam ( value = "description", required = false)String description){
+		ProductCategory category = null;
+		if ( categoryId != null ){
+			category = this.productCategoryService.getById(categoryId);
+			if ( category == null )throw new ResourceNotFoundException("Category", categoryId);
+		}
+		Product product = this.productService.getProduct(id);
+		if ( product == null ) throw new ResourceNotFoundException("Product", id);
+		if ( name != null )product.setName(name);
+		if ( category != null )product.setCategory(category);
+		if ( description != null )product.setDescription(description);
+		product = this.productService.updateProduct(product);
+		return product;
+	}
 }

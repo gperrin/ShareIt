@@ -2,6 +2,7 @@ package fr.lyon.insa.ot.sims.shareIt.server.domain;
 
 import java.util.Arrays;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,7 +19,8 @@ public class Sharer {
 	@Id
 	@GeneratedValue()
 	private int id;
-	@Type(type="org.hibernate.spatial.GeometryType")
+	//@Type(type="org.hibernate.spatial.GeometryType")
+	@Column(name = "geometry", columnDefinition="Geometry", nullable = true) 
 	private Point location;
 	private byte[] profilePicture;
 	private MediaType proFilePictureType;
