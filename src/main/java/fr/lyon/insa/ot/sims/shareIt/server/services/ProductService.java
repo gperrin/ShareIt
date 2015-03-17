@@ -90,6 +90,7 @@ public class ProductService{
 		
 	    if (categoryId != null) {
 	    	ProductCategory category = this.productCategoryService.getById(categoryId);
+	    	if ( category == null )throw new ResourceNotFoundException("Product category", categoryId);
 	    	result = CollectionUtils.intersection(result, this.productRepository.findByCategory(category));
 	    }
 	    if (postcode != null) {
@@ -103,8 +104,7 @@ public class ProductService{
 	    }
 	    if (name != null && !name.isEmpty()) {
 	    	result = CollectionUtils.intersection(result, this.productRepository.findByNameLike(name));
-	    }
-	    
+	    } 
 		return result;
 	}
 

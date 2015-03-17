@@ -15,8 +15,8 @@ import fr.lyon.insa.ot.sims.shareIt.server.domain.Sharer;
 public interface ProductRepository extends CrudRepository<Product, Integer> {
 	public Collection<Product> findBySharer(Sharer sharer);
 	public Collection<Product> findByCategory(ProductCategory category);	
-	@Query("SELECT p FROM Product p WHERE difference(p.name,:name) > 2")
-	public Collection<Product> findByNameLike(@Param("name") String name);   
+	@Query(value = "SELECT * FROM Product WHERE difference(name,?1) > 2", nativeQuery = true)
+	public Collection<Product> findByNameLike( String name);   
 
 
 }
