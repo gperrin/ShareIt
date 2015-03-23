@@ -1,6 +1,7 @@
 package fr.lyon.insa.ot.sims.shareIt.server.services;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -96,5 +97,9 @@ public class SharerService{
 
 	public Collection<Sharer> getSharers(int postcode) {
 		return this.sharerRepository.findByPostCode(postcode);
-	}	
+	}
+	
+	public List<Sharer> getNearbySharers ( int userId ){
+		return this.sharerRepository.findNearbySharers(userId, 0.5);
+	}
 }

@@ -85,8 +85,9 @@ public class ProductController extends GenericController{
 	public @ResponseBody Collection<Product> getProducts(
 			@RequestParam(required= false, value="postcode")Integer postcode,
 			@RequestParam(required=false, value ="category") Integer categoryId,
-			@RequestParam(required=false, value = "name") String name){
-		return this.productService.findProducts(postcode, categoryId, name);
+			@RequestParam(required=false, value = "name") String name,
+			@RequestParam(required = true, value="user") int userId){
+		return this.productService.findProducts(postcode, categoryId, name, userId);
 	}
 	@RequestMapping ( method = RequestMethod.PUT, value = "/product/{id:[\\d]+}")
 	public @ResponseBody Product updateProduct (@PathVariable("id")int id,

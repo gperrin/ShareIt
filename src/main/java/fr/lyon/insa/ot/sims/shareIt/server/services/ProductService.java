@@ -2,6 +2,8 @@ package fr.lyon.insa.ot.sims.shareIt.server.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,9 +87,10 @@ public class ProductService{
 		}
 	}
 	
-	public Collection<Product> findProducts(Integer postcode, Integer categoryId, String name){
+	public List<Product> findProducts(Integer postcode, Integer categoryId, String name, int userId){
 		Collection<Product> result = this.findProducts();
-		
+		Sharer user = this.sharerService.getUser(userId);
+		if ( user == null ) throw new ResourceNotFoundException ( "User", userId);
 	    if (categoryId != null) {
 	    	ProductCategory category = this.productCategoryService.getById(categoryId);
 	    	if ( category == null )throw new ResourceNotFoundException("Product category", categoryId);
@@ -105,7 +108,16 @@ public class ProductService{
 	    if (name != null && !name.isEmpty()) {
 	    	result = CollectionUtils.intersection(result, this.productRepository.findByNameLike(name));
 	    } 
-		return result;
+	    List<Sharer> nearbySharers = this.sharerService.getNearbySharers(userId);
+	    List<Product> orderedProducts = new LinkedList<>();
+	    for ( Sharer sharer : nearbySharers ){
+	    	for ( Product p : result){
+	    		if ( p.getSharer().equals( sharer)){
+	    			orderedProducts.add(p);
+	    		}
+	    	}
+	    }
+		return orderedProducts;
 	}
 
 	public Collection<Product> findProducts(){
