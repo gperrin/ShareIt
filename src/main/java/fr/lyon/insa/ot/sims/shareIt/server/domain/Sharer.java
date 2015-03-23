@@ -23,7 +23,7 @@ public class Sharer {
 	//@Column(columnDefinition="geography(POINT, 4326)")
 	@Column(columnDefinition="geometry")
 	private Point location;
-	private byte[] profilePicture;
+	private String profilePicture;
 	private MediaType proFilePictureType;
 	private String lastname;
 	private String firstname;
@@ -73,10 +73,10 @@ public class Sharer {
 	public void setRating(float rating) {
 		this.rating = rating;
 	}
-	public byte[] getProfilePicture() {
+	public String getProfilePicture() {
 		return profilePicture;
 	}
-	public void setProfilePicture(byte[] profilePicture) {
+	public void setProfilePicture(String profilePicture) {
 		this.profilePicture = profilePicture;
 	}
 	public MediaType getProFilePictureType() {
@@ -126,7 +126,8 @@ public class Sharer {
 				* result
 				+ ((proFilePictureType == null) ? 0 : proFilePictureType
 						.hashCode());
-		result = prime * result + Arrays.hashCode(profilePicture);
+		result = prime * result
+				+ ((profilePicture == null) ? 0 : profilePicture.hashCode());
 		result = prime * result + Float.floatToIntBits(rating);
 		result = prime * result + sex;
 		result = prime * result
@@ -170,7 +171,7 @@ public class Sharer {
 				return false;
 		} else if (!proFilePictureType.equals(other.proFilePictureType))
 			return false;
-		if (!Arrays.equals(profilePicture, other.profilePicture))
+		if (!profilePicture.equals(other.profilePicture))
 			return false;
 		if (Float.floatToIntBits(rating) != Float.floatToIntBits(other.rating))
 			return false;

@@ -6,7 +6,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -71,7 +70,7 @@ public class SharerController extends GenericController{
 			@RequestParam(required= false, value = "age") Integer age,
 			@RequestParam(required= false, value = "sex") Character sex,
 			@RequestParam(required= false, value = "postcode") Integer postCode,
-			HttpEntity<byte[]> picture){
+			@RequestParam(required= false, value = "picture") String picture){
 		Sharer sharer = this.sharerService.getUser(id);
 		if ( sharer == null ) throw new ResourceNotFoundException ( "user", id);	
 		if ( firstName != null ){
@@ -95,15 +94,12 @@ public class SharerController extends GenericController{
 			}
 			sharer.setSex(sex);
 		}
-		if (picture != null &&  picture.getBody()!= null )/*&& picture.getHeaders() != null && 
+		if (picture != null )/*&& picture.getHeaders() != null && 
 				picture.getHeaders().getContentType()!= null &&
 				(picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_GIF)||
 						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_JPEG)||
 						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_PNG)))*/{
-			byte[] pic = picture.getBody();
-			MediaType picType = picture.getHeaders().getContentType();
-			sharer.setProfilePicture(pic);
-			sharer.setProFilePictureType(picType);
+			sharer.setProfilePicture(picture);
 		}
 		if (! this.sharerService.updateUser(sharer)) throw new RuntimeException("User could not be updated :'(");
 		UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent();
