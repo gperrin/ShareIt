@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.Point;
 
 
 @Entity
-public class Sharer {
+public class Sharer  {
 	@Id
 	@GeneratedValue()
 	private int id;
@@ -23,7 +23,7 @@ public class Sharer {
 	//@Column(columnDefinition="geography(POINT, 4326)")
 	@Column(columnDefinition="geometry")
 	private Point location;
-	private String profilePicture;
+	private byte[] profilePicture;
 	private MediaType proFilePictureType;
 	private String lastname;
 	private String firstname;
@@ -73,10 +73,10 @@ public class Sharer {
 	public void setRating(float rating) {
 		this.rating = rating;
 	}
-	public String getProfilePicture() {
+	public byte[] getProfilePicture() {
 		return profilePicture;
 	}
-	public void setProfilePicture(String profilePicture) {
+	public void setProfilePicture(byte[] profilePicture) {
 		this.profilePicture = profilePicture;
 	}
 	public MediaType getProFilePictureType() {
@@ -126,8 +126,7 @@ public class Sharer {
 				* result
 				+ ((proFilePictureType == null) ? 0 : proFilePictureType
 						.hashCode());
-		result = prime * result
-				+ ((profilePicture == null) ? 0 : profilePicture.hashCode());
+		result = prime * result + Arrays.hashCode(profilePicture);
 		result = prime * result + Float.floatToIntBits(rating);
 		result = prime * result + sex;
 		result = prime * result
@@ -171,10 +170,7 @@ public class Sharer {
 				return false;
 		} else if (!proFilePictureType.equals(other.proFilePictureType))
 			return false;
-		if (profilePicture == null) {
-			if (other.profilePicture != null)
-				return false;
-		} else if (!profilePicture.equals(other.profilePicture))
+		if (!Arrays.equals(profilePicture, other.profilePicture))
 			return false;
 		if (Float.floatToIntBits(rating) != Float.floatToIntBits(other.rating))
 			return false;

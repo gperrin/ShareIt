@@ -86,6 +86,7 @@ public class SharerService{
 	public boolean updateUser(Sharer sharer) {
 		try {
 			this.userStatsRepository.save(sharer.getUserStats());
+			
 			this.sharerRepository.save(sharer);
 	}
 		catch ( Exception e ){

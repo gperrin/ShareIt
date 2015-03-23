@@ -13,7 +13,7 @@ public class SharerBuilder {
 		return this;
 	}
 	
-	public SharerBuilder profilePicture (String profilePicture){
+	public SharerBuilder profilePicture (byte[] profilePicture){
 		sharer.setProfilePicture(profilePicture);
 		return this;
 	}
