@@ -1,5 +1,6 @@
 package fr.lyon.insa.ot.sims.shareIt.server;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import org.springframework.http.HttpEntity;
@@ -100,7 +101,14 @@ public class SharerController extends GenericController{
 				(picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_GIF)||
 						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_JPEG)||
 						picture.getHeaders().getContentType().equals(MimeTypeUtils.IMAGE_PNG)))*/{
-			byte[] pic = picture.getBody();
+			//byte[] pic = picture.getBody();
+			String pic = "";
+			try {
+				pic = new String ( picture.getBody(), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			MediaType picType = picture.getHeaders().getContentType();
 			sharer.setProfilePicture(pic);
 			sharer.setProFilePictureType(picType);
